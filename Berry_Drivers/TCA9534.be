@@ -37,10 +37,10 @@ SOFTWARE.
  - Last Updated: 2026-02-26
  - ========================================================= -#
 
-#- ========================================
- - I2C I/O Expander User Configuration
+#- ===========================================
+ - I2C I/O Expander or GPIO User Configuration
  - Change these values to match your board
- - ======================================== -#
+ - =========================================== -#
 
 var IOEXPANDER_ADDRESS   = 0x3F  #- I2C address: 0x20 to 0x27 or 0x38 to 0x3F depending on A0/A1/A2 pins -#
 var IOEXPANDER_PINCONFIG = "00001111"  #- 1=input, 0=output, MSB to LSB (P7 to P0) -#
