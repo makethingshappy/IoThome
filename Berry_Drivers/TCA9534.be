@@ -26,7 +26,7 @@ SOFTWARE.
 #- ==================================================================
  - Tasmota TCA9534/TCA9534A I2C & GPIO I/O driver written in Berry
  - 8-bit I/O expander & GPIO with explicit input/output configuration
- - GPIO mode allows using Tasmota's built-in GPIO support
+ - GPIO mode mainly uses Tasmota's built-in API features
  - ================================================================== -#
 
 #- =========================================================
