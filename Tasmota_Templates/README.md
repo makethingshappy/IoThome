@@ -1,4 +1,4 @@
-# Tasmota Templates
+# 🔗 Tasmota Templates
 
 IoTextra Octal2:
 
