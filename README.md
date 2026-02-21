@@ -6,7 +6,7 @@ A standalone ecosystem integrating the IoTextra series modules with Tasmota firm
 
 ## 📜 Licensing
 
-All IoTflow code, documentation, and media are licensed under:
+All IoThome code, documentation, and media are licensed under:
 
 📄 **[`LICENSE`](./LICENSE)**
 
