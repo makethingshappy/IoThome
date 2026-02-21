@@ -53,7 +53,7 @@ class ADS1115Data : Driver
   end
 
 
-  def every_second()
+  def every_100ms()
     if !self.ads1115 return nil end
     self.ads1115()
   end
