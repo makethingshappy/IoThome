@@ -1,15 +1,50 @@
 #-
- - Tasmota TCA9534 I2C driver written in Berry
- - 8-bit I/O expander with explicit input/output configuration
+MIT License
+
+Copyright (c) 2026 makethingshappy,
+              2026 Arshia Keshvari (@TeslaNeuro)
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
 -#
+
+#- ==================================================================
+ - Tasmota TCA9534/TCA9534A I2C & GPIO I/O driver written in Berry
+ - 8-bit I/O expander & GPIO with explicit input/output configuration
+ - GPIO mode allows using Tasmota's built-in GPIO support
+#- ================================================================== -#
+
+#- =========================================================
+ - Author: Arshia Keshvari
+ - Role: Independent Developer, Engineer, and Project Author
+ - GitHub: @TeslaNeuro
+ - MakeThingsHappy.io
+ - Last Updated: 2026-02-26
+#- ========================================================= -#
 
 #- ========================================
  - I2C I/O Expander User Configuration
  - Change these values to match your board
- - ======================================== -#
+#- ======================================== -#
 
-var IOEXPANDER_ADDRESS   = 0x3F  #- I2C address: 0x38 to 0x3F depending on A0/A1/A2 pins -#
+var IOEXPANDER_ADDRESS   = 0x3F  #- I2C address: 0x20 to 0x27 depending on A0/A1/A2 pins -#
 var IOEXPANDER_PINCONFIG = "00001111"  #- 1=input, 0=output, MSB to LSB (P7 to P0) -#
+var HARDWARE_MODE        = "gpio"  #- "i2c" or "gpio" -#
 
 #- TCA9534A I2C Address reference:
  - A2=L A1=L A0=L -> 0x38
@@ -53,9 +88,11 @@ class TCA9534 : Driver
   var output_pin_state
   var i2cAddress
   var pinConfig
+  var hardware_mode
 
-  def init(i2cAddress, pinConfig)
+  def init(i2cAddress, pinConfig, hardware_mode)
     self.i2cAddress = i2cAddress
+    self.hardware_mode = hardware_mode
     self.output_pin_state = 0xFF # All relays off initially -> this is to track state of the outputs on the firmware
 
     self.INPUT_PORT_REGISTER  = 0x00
@@ -75,26 +112,29 @@ class TCA9534 : Driver
       end
     end
 
-    self.wire = tasmota.wire_scan(self.i2cAddress)
+    if self.hardware_mode == "i2c"
+      self.wire = tasmota.wire_scan(self.i2cAddress)
 
-    if self.wire
-      #- write pin config to the config register over i2c-#
-      self.wire._begin_transmission(self.i2cAddress)
-      self.wire._write(self.CONFIG_REGISTER)
-      self.wire._write(self.pinConfig)
-      self.wire._end_transmission()
-      print(string.format("I2C: I/O Expander detected at 0x%02X on bus %i", self.i2cAddress, self.wire.bus))
-      print(string.format("I/O Expander: Configuring pins with bitmask 0x%02X", self.pinConfig))
+      if self.wire
+        #- write pin config to the config register over i2c-#
+        self.wire._begin_transmission(self.i2cAddress)
+        self.wire._write(self.CONFIG_REGISTER)
+        self.wire._write(self.pinConfig)
+        self.wire._end_transmission()
+        print(string.format("I2C: I/O Expander detected at 0x%02X on bus %i", self.i2cAddress, self.wire.bus))
+        print(string.format("I/O Expander: Configuring pins with bitmask 0x%02X", self.pinConfig))
+      else
+        print(string.format("I2C: I/O Expander not found at address 0x%02X", self.i2cAddress))
+      end
+    elif self.hardware_mode == "gpio"
+      print("I/O Expander: Initializing in GPIO mode")
+      print(string.format("I/O Expander: Using Tasmota template GPIO assignments"))
     else
-      print(string.format("I2C: I/O Expander not found at address 0x%02X", self.i2cAddress))
+      print("Invalid hardware mode, must be 'i2c' or 'gpio'")
     end
-
   end
 
   def set_output(channel, output_state)
-    if !self.wire return nil end
-    if self.output_pin_state == nil return nil end
-
     #- validate channel range -#
     if channel < 1 || channel > 8 return nil end
 
@@ -104,47 +144,79 @@ class TCA9534 : Driver
       return nil
     end
 
-    var pin_index = channel - 1
+    if self.hardware_mode == "i2c"
+      if !self.wire return nil end
+      if self.output_pin_state == nil return nil end
 
-    #- active-low: state true = bit 0, state false = bit 1 -#
-    if output_state
-      self.output_pin_state = self.output_pin_state & ~(1 << pin_index) #- clear bit -#
-    else
-      self.output_pin_state = self.output_pin_state | (1 << pin_index)          #- set bit -#
+      var pin_index = channel - 1
+
+      #- active-low: state true = bit 0, state false = bit 1 -#
+      if output_state
+        self.output_pin_state = self.output_pin_state & ~(1 << pin_index)
+      else
+        self.output_pin_state = self.output_pin_state | (1 << pin_index)
+      end
+
+      self.wire._begin_transmission(self.i2cAddress)
+      self.wire._write(self.OUTPUT_PORT_REGISTER)
+      self.wire._write(self.output_pin_state)
+      self.wire._end_transmission()
+
+      print(string.format("I2C: channel %i set to %s, output register=0x%02X", channel, output_state ? "ON" : "OFF", self.output_pin_state))
+
+    elif self.hardware_mode == "gpio"
+      #- Count how many output channels exist BEFORE this channel -#
+      var relay_idx = 0
+      for i:0..(channel - 2)
+        if ((self.pinConfig >> i) & 0x01) == 0  #- is output -#
+          relay_idx = relay_idx + 1
+        end
+      end
+      tasmota.set_power(relay_idx, output_state)
+      print(string.format("GPIO: channel %i (relay %i) set to %s", channel, relay_idx, output_state ? "ON" : "OFF"))
     end
 
-    self.wire._begin_transmission(self.i2cAddress)
-    self.wire._write(self.OUTPUT_PORT_REGISTER)
-    self.wire._write(self.output_pin_state)
-    self.wire._end_transmission()
-
-    print(string.format("I/O Expander: channel %i set to %s, output register=0x%02X", channel, output_state ? "ON" : "OFF", self.output_pin_state))
-
-    return self.output_pin_state
+    return output_state
   end
 
   def read_all_inputs()
-
-    if !self.wire return nil end  #- exit if not initialized -#
-
-    var r = self.wire.read(self.i2cAddress, self.INPUT_PORT_REGISTER, 1)
-    if r == nil return nil end
-
     var result = []
 
-    # pinConfig: 1 = input, 0 = output
-    for i:0..7
-      if (self.pinConfig >> i) & 0x01
+    if self.hardware_mode == "i2c"
+      if !self.wire return nil end #- exit if not initialized -#
 
-        #- input pin: read and invert state -#
-        var state = (r >> i) & 0x01
+      var r = self.wire.read(self.i2cAddress, self.INPUT_PORT_REGISTER, 1)
+      if r == nil return nil end
 
-        # Reverse logic: active-low hardware means 0 = signal present, 1 = no signal, so we invert it
-        result.push(state ^ 0x01)
+      # pinConfig: 1 = input, 0 = output
+      for i:0..7
+        if (self.pinConfig >> i) & 0x01
 
-      else
-        # Output pin → None
-        result.push(nil)
+          #- input pin: read and invert state -#
+          var state = (r >> i) & 0x01
+          
+          # Reverse logic: active-low hardware means 0 = signal present, 1 = no signal, so we invert it
+          result.push(state ^ 0x01)
+        else
+          # Output pin → None
+          result.push(nil)
+        end
+      end
+
+    elif self.hardware_mode == "gpio"
+      var switches = tasmota.get_switch()
+      
+      for i:0..7
+        if (self.pinConfig >> i) & 0x01
+          #- Input pin - read from Tasmota switch -#
+          if switches && size(switches) > i
+            result.push(switches[i] ? 1 : 0)
+          else
+            result.push(0)
+          end
+        else
+          result.push(nil)
+        end
       end
     end
 
@@ -173,8 +245,9 @@ class TCA9534 : Driver
   # Read all inputs and publish changes on input state changes on console monitor every 100ms
   # You can also set outputs based on input states in this method as an example of how to use the read_all_inputs() method
   def every_second()
-    if !self.wire return end  #- exit if wire not initialized -#
-    
+    # if !self.wire return end  #- exit if wire not initialized -#
+    # self.read_all_inputs()
+
     var input_states = self.read_all_inputs()
     
     if input_states != nil
@@ -187,8 +260,21 @@ class TCA9534 : Driver
       end
     end
   end
+
+  # def web_sensor()
+  #   if !self.wire return nil end #- exit if not initialized -#
+  #   var msg = string.format("
+
+  #   tasmota.web_send_decimal(msg)
+  # end
+
+  # def json_append()
+  #   if !self.wire return nil end #- exit if not initialized -#
+
+  #   tasmota.response_append(msg)
   
+  # end
 end
 
-tca9534 = TCA9534(IOEXPANDER_ADDRESS, IOEXPANDER_PINCONFIG)
+tca9534 = TCA9534(IOEXPANDER_ADDRESS, IOEXPANDER_PINCONFIG, HARDWARE_MODE)
 tasmota.add_driver(tca9534)
