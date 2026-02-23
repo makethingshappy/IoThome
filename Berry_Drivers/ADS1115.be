@@ -138,7 +138,7 @@ class ADS1115Data : Driver
       if sensors.contains(dev)
         var ads = sensors[dev]
         
-        # Differential mode = only A0 & A1 exist
+        # Differential mode = only A0 = CH0-CH1 & A1 = CH2-CH3 exist
         for ch : ["A0", "A1"]
           if ads.contains(ch)
             if channel_idx >= size(self.channel_configs)
@@ -161,12 +161,36 @@ class ADS1115Data : Driver
             if config['type'] == 'voltage'
               #- Voltage measurement -#
               var mv = (raw * v_p_b) / self.hardware_g
+              
+              #- Clamp to configured range -#
+              if mv < config['min']
+                if mv == 0.0
+                  mv = 0.0
+                else
+                  mv = config['min']
+                end
+              elif mv > config['max']
+                mv = config['max']
+              end
+
               results.push(mv)
               
             elif config['type'] == 'current'
               #- Current measurement -#
               var mv = (raw * v_p_b) / self.hardware_g
               var ma = mv / self.shunt_resistor
+
+              #- Clamp to configured range -#
+              if ma < config['min']
+                if ma == 0.0
+                  ma = 0.0
+                else 
+                  ma = config['min']
+                end
+              elif ma > config['max']
+                ma = config['max']
+              end
+
               results.push(ma)
             end
             
