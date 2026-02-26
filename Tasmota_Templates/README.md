@@ -1,5 +1,11 @@
 # 🔗 Tasmota Templates
 
+IoTextra Input:
+
+```
+{"NAME":"IoTextra Input","GPIO":[1,1,166,165,164,167,1,1,1,160,161,640,608,1,1,1,1,162,163,1,1,1,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1],"FLAG":0,"BASE":1}
+```
+
 IoTextra Octal2:
 
 ```
