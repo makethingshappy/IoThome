@@ -1,3 +1,36 @@
+#-
+MIT License
+
+Copyright (c) 2026 makethingshappy,
+              2026 Arshia Keshvari (@TeslaNeuro)
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+-#
+
+#- =========================================================
+ - Author: Arshia Keshvari
+ - Role: Independent Developer, Engineer, and Project Author
+ - GitHub: @TeslaNeuro
+ - MakeThingsHappy.io
+ - Last Updated: 2026-03-01
+ - ========================================================= -#
+
 #- ========================================
  - SmartFarm Automation - autoexec.be
  - Local autonomous irrigation control
@@ -14,7 +47,7 @@ load("ADS1115Data.be")
 var SOIL_CHANNEL = 0           #- Analog differential channel for soil moisture (D0) -#
 var IRRIGATION_RELAY = 1       #- Output channel for irrigation relay -#
 var DRY_THRESHOLD_PERCENT = 30 #- Irrigate when below this % -#
-var IRRIGATION_DURATION = 300  #- Seconds to run irrigation (5 minutes) -#
+var IRRIGATION_DURATION = 20  #- Seconds to run irrigation (300 = 5 minutes) -#
 
 #- Calibration values (adjust based on your sensor in dry/wet soil) -#
 var MIN_ANALOG_VALUE = 1.0     #- Voltage when sensor is in DRY soil -#
@@ -66,16 +99,16 @@ class SmartFarm : Driver
   
   def check_irrigation()
     #- Get current soil moisture reading -#
-    if !ads1115_data || !ads1115_data.convert_to_mv
+    if !global.ADS1115Data.convert_to_mv
       return
     end
     
-    if self.soil_channel >= size(ads1115_data.convert_to_mv)
+    if self.soil_channel >= size(global.ADS1115Data.convert_to_mv)
       print("SmartFarm: Soil channel out of range")
       return
     end
     
-    var raw_voltage = ads1115_data.convert_to_mv[self.soil_channel]
+    var raw_voltage = global.ADS1115Data.convert_to_mv[self.soil_channel]
     self.soil_moisture_percent = self.scale_to_percent(raw_voltage)
     
     var current_time = tasmota.millis() / 1000  #- Convert to seconds -#
@@ -86,7 +119,7 @@ class SmartFarm : Driver
       
       if elapsed >= self.irrigation_duration
         #- Turn off irrigation after duration expires -#
-        tca9534.set_output(self.relay_channel, false)
+        global.tca9534.set_output(self.relay_channel, false)
         self.irrigation_active = false
         print(string.format("SmartFarm: Irrigation completed (ran for %is)", elapsed))
       end
@@ -98,15 +131,16 @@ class SmartFarm : Driver
       #- Prevent rapid re-triggering (minimum 1 hour between cycles) -#
       var time_since_last = current_time - self.last_trigger_time
       
-      if time_since_last > 3600  #- 1 hour cooldown -#
+      if time_since_last > 20  #- 3600 = 1 hour cooldown -#
         print(string.format("SmartFarm: Soil moisture LOW (%.1f%%), starting irrigation", self.soil_moisture_percent))
         
-        tca9534.set_output(self.relay_channel, true)
+        global.tca9534.set_output(self.relay_channel, true)
         self.irrigation_active = true
         self.irrigation_start_time = current_time
         self.last_trigger_time = current_time
       else
-        var remaining = 3600 - time_since_last
+        # You can put 3600 if you want 1 hour cooldown, but for testing we can set it to 20 seconds
+        var remaining = 20 - time_since_last
         print(string.format("SmartFarm: Soil dry but cooldown active (%i min remaining)", remaining / 60))
       end
     end
