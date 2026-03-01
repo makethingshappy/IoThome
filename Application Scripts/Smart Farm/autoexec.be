@@ -23,6 +23,11 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 -#
 
+#- ========================================
+ - SmartFarm Automation - autoexec.be
+ - Local autonomous irrigation control
+ - ======================================== -#
+ 
 #- =========================================================
  - Author: Arshia Keshvari
  - Role: Independent Developer, Engineer, and Project Author
@@ -30,11 +35,6 @@ SOFTWARE.
  - MakeThingsHappy.io
  - Last Updated: 2026-03-01
  - ========================================================= -#
-
-#- ========================================
- - SmartFarm Automation - autoexec.be
- - Local autonomous irrigation control
- - ======================================== -#
 
 #- Load drivers -#
 load("TCA9534.be")
