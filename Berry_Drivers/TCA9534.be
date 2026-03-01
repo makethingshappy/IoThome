@@ -26,7 +26,7 @@ SOFTWARE.
 #- ==================================================================
  - Tasmota TCA9534/TCA9534A I2C & GPIO I/O driver written in Berry
  - 8-bit I/O expander & GPIO with explicit input/output configuration
- - GPIO mode mainly uses Tasmota's built-in API features
+ - GPIO mode allows using Tasmota's built-in GPIO support
  - ================================================================== -#
 
 #- =========================================================
@@ -34,7 +34,7 @@ SOFTWARE.
  - Role: Independent Developer, Engineer, and Project Author
  - GitHub: @TeslaNeuro
  - MakeThingsHappy.io
- - Last Updated: 2026-02-22
+ - Last Updated: 2026-03-01
  - ========================================================= -#
 
 #- ===========================================
@@ -42,9 +42,9 @@ SOFTWARE.
  - Change these values to match your board
  - =========================================== -#
 
-var IOEXPANDER_ADDRESS   = 0x3F  #- I2C address: 0x20 to 0x27 or 0x38 to 0x3F depending on A0/A1/A2 pins -#
-var IOEXPANDER_PINCONFIG = "00001111"  #- 1=input, 0=output, MSB to LSB (P7 to P0) -#
-var HARDWARE_MODE        = "gpio"  #- "i2c" or "gpio" -#
+var IOEXPANDER_ADDRESS   = 0x27  #- I2C address: 0x20 to 0x27 or 0x38 to 0x3F depending on A0/A1/A2 pins -#
+var IOEXPANDER_PINCONFIG = "xxxxxx00"  #- 1=input, 0=output, MSB to LSB (P7 to P0) -#
+var HARDWARE_MODE        = "i2c"  #- "i2c" or "gpio" -#
 
 #- TCA9534A I2C Address reference:
  - A2=L A1=L A0=L -> 0x38
@@ -73,9 +73,10 @@ var HARDWARE_MODE        = "gpio"  #- "i2c" or "gpio" -#
 # IoTExtra Relay2 -> 0b11110000 ATTENTION: check the schematic (P4-P7 i.e. channels 5-8 are unused)
 # IoTExtra Input -> 0b11111111
 # IoTExtra Octal -> 0b00001111
-# IoTExtra Combo -> 0b11000000
+# IoTExtra Combo -> 0bxxxxxx00
 
 import string
+import global
 
 class TCA9534 : Driver
 
@@ -244,37 +245,76 @@ class TCA9534 : Driver
   
   # Read all inputs and publish changes on input state changes on console monitor every 100ms
   # You can also set outputs based on input states in this method as an example of how to use the read_all_inputs() method
-  def every_second()
+  def every_100ms()
     # if !self.wire return end  #- exit if wire not initialized -#
-    # self.read_all_inputs()
+    self.read_all_inputs()
 
-    var input_states = self.read_all_inputs()
+    # var input_states = self.read_all_inputs()
     
-    if input_states != nil
-      print(string.format("I/O Channels: %s", str(input_states)))
+    # if input_states != nil
+    #   print(string.format("I/O Channels: %s", str(input_states)))
       #- Setting output example: if input P1 is active, turn on output P4 -#
-      if input_states[1] == 1
-        self.set_output(5, true)
-      else
-        self.set_output(5, false)
-      end
-    end
+      # if input_states[1] == 1
+      #   self.set_output(1, true)
+      # else
+      #   self.set_output(1, false)
+      # end
+    # end
   end
 
-  # def web_sensor()
-  #   if !self.wire return nil end #- exit if not initialized -#
-  #   var msg = string.format("
+  #-- Web UI: display inputs/outputs -#
+  def web_sensor()
+    var input_states = self.read_all_inputs()
+    if input_states == nil return nil end
 
-  #   tasmota.web_send_decimal(msg)
-  # end
+    var msg = ""
+    
+    for i:0..7
+      var channel = i + 1
+      var pin_name = string.format("P%d (CH%d)", i, channel)
+      
+      if input_states[i] != nil
+        #- Input pin -#
+        var state_text = input_states[i] == 1 ? "HIGH" : "LOW"
+        msg += string.format("{s}%s IN{m}%s{e}", pin_name, state_text)
+      else
+        #- Output pin: invert output_pin_state (active-low) -#
+        var state = ((self.output_pin_state >> i) & 0x01) ? 0 : 1
+        var state_text = state == 1 ? "ON" : "OFF"
+        msg += string.format("{s}%s OUT{m}%s{e}", pin_name, state_text)
+      end
+    end
 
-  # def json_append()
-  #   if !self.wire return nil end #- exit if not initialized -#
+    tasmota.web_send_decimal(msg)
+  end
 
-  #   tasmota.response_append(msg)
-  
-  # end
+  def json_append()
+    var input_states = self.read_all_inputs()
+    if input_states == nil return nil end
+
+    var msg = ",\"TCA9534\":{"
+    var first = true
+
+    for i:0..7
+      if !first msg += "," end
+      first = false
+      
+      var value = nil
+      if input_states[i] != nil
+        #- Input pin -#
+        value = input_states[i]
+        msg += string.format("\"P%d_IN\":%d", i, value)
+      else
+        #- Output pin: invert output_pin_state (active-low) -#
+        value = ((self.output_pin_state >> i) & 0x01) ? 0 : 1
+        msg += string.format("\"P%d_OUT\":%d", i, value)
+      end
+    end
+
+    msg += "}"
+    tasmota.response_append(msg)
+  end
 end
 
-tca9534 = TCA9534(IOEXPANDER_ADDRESS, IOEXPANDER_PINCONFIG, HARDWARE_MODE)
-tasmota.add_driver(tca9534)
+global.tca9534 = TCA9534(IOEXPANDER_ADDRESS, IOEXPANDER_PINCONFIG, HARDWARE_MODE)
+tasmota.add_driver(global.tca9534)
