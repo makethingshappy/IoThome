@@ -28,6 +28,13 @@ The TCA9534 A2/A1/A0 pins select one of eight addresses:
 | 1  | 1  | 0  | 0100110             | 0x26 |
 | 1  | 1  | 1  | 0100111             | 0x27 |
 
+Make sure to disable the following I2C driver in tasmota when using TCA9534 using the following command in Tasmota console:
+
+```
+I2cDriver36 0
+```
+
+
 ---
 
 ## TCA9534A — I²C Address Table
