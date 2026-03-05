@@ -70,14 +70,14 @@ Each digital I/O module is defined by the following parameters:
 
 | Channel No. | HOST Pin |
 |:-----------:|:--------:|
-| 0           | AP0      |
-| 1           | AP1      |
-| 2           | AP2      |
-| 3           | AP3      |
-| 4           | AP4      |
-| 5           | AP5      |
-| 6           | AP6      |
-| 7           | AP7      |
+| 1           | AP0      |
+| 2           | AP1      |
+| 3           | AP2      |
+| 4           | AP3      |
+| 5           | AP4      |
+| 6           | AP5      |
+| 7           | AP6      |
+| 8           | AP7      |
 
 ### TCA9534/TCA9534A Contact Map
 
