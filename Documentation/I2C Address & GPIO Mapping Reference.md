@@ -95,11 +95,11 @@ Each digital channel is defined by the following parameters:
 
 ---
 
-## Possible Actions Bitmask
+## IOEXPANDER_PINCONFIG
 
-The **Possible Actions** field is a single byte. Each bit defines each channel starting from LSB CH0 to MSB CH7:
+Each bit defines each channel starting from LSB CH0 to MSB CH7:
 
-| Bit | 7 | 6 | 5 | 4 | 3 | 2 | 1 | 0        |
+| Bit | 7 (MSB) | 6 | 5 | 4 | 3 | 2 | 1 | 0 (LSB)       |
 |-----|---|---|---|---|---|---|---|----------|
 
 
