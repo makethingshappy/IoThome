@@ -108,10 +108,6 @@ IoThome/
 
 ---
 
-## 🔄 Planned Updates
-
----
-
 ## 📜 Licensing
 
 All IoThome code, documentation, and media are licensed under:
