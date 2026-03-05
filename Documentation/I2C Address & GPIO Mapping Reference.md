@@ -102,8 +102,14 @@ Each bit defines each channel starting from LSB CH0 to MSB CH7:
 | Bit | 7 (MSB) | 6 | 5 | 4 | 3 | 2 | 1 | 0 (LSB)       |
 |-----|---|---|---|---|---|---|---|----------|
 
+Example:
 
-> **Note:** Reading is always available for all channel types, including OUTPUT channels (e.g. relays).
+- IoTExtra Relay2 -> `11110000`
+- IoTExtra Input ->  `11111111`
+- IoTExtra Octal ->  `00001111`
+- IoTExtra Combo ->  `xxxxxx00`
+
+> **Note:** Reading is always available for all channel types, including OUTPUT channels (e.g. relays). Always check the schematic for exact pinout for each IoTextra Digital I/O series module.
 
 ---
 
