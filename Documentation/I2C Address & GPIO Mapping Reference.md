@@ -62,11 +62,10 @@ Each digital channel is defined by the following parameters:
 
 | Parameter        | Description                                                                 |
 |------------------|-----------------------------------------------------------------------------|
-| Direction        | `INPUT` or `OUTPUT`                                                         |
-| Interface Type   | `HOST` (direct pin on HOST connector) or `I2C` (via TCA9534)              |
-| I²C Address      | TCA9534 bus address — applicable only when Interface Type = `I2C`          |
-| Channel Number   | Pin index `0–7`. Maps to `AP0–AP7` (HOST) or `P0–P7` (TCA9534)           |
-| Possible Actions | Bitmask byte defining allowed operations (see table below)                 |
+| IOEXPANDER_PINCONFIG | 8-bit binary `[P7][P6][P5][P4][P3][P2][P1][P0]` `1=input`, `0=output`, `MSB to LSB (P7 to P0)`|
+| HARDWARE_MODE        | `gpio` (direct pin on HOST connector) or `I2C` (via TCA9534/TCA9534A)   |
+| IOEXPANDER_ADDRESS   | TCA9534 bus address — applicable only when Interface Type = `I2C`       |
+| Channel Number       | Pin index `0–7`. Maps to `AP0–AP7` (HOST) or `P0–P7` (TCA9534)          |
 
 ### HOST Connector Pin Map
 
@@ -98,37 +97,22 @@ Each digital channel is defined by the following parameters:
 
 ## Possible Actions Bitmask
 
-The **Possible Actions** field is a single byte. Each bit defines whether a specific operation is permitted on the channel:
+The **Possible Actions** field is a single byte. Each bit defines each channel starting from LSB CH0 to MSB CH7:
 
 | Bit | 7 | 6 | 5 | 4 | 3 | 2 | 1 | 0        |
 |-----|---|---|---|---|---|---|---|----------|
-| Action | — | — | — | — | — | — | — | Write    |
 
-| Bit 0 Value | Meaning        |
-|:-----------:|----------------|
-| `1`         | Write enabled  |
-| `0`         | No write       |
 
-> **Note:** Reading is always available for all channel types, including OUTPUT channels (e.g. relays). The firmware stores the last known state of each channel, enabling readback of output states. Bits 1–7 are reserved for future use.
-
----
-
-## Multi-Channel Node Rules
-
-- A node supports **up to 8 channels**.
-- Channels within a single node may be a **mix** of INPUT and OUTPUT directions.
-- Channels within a single node may be a **mix** of HOST and I²C interface types.
-- Operations on one channel **must not affect** the state of any other channel.
-- The firmware must **maintain and use state** for all HOST and TCA9534 channels to ensure safe read-modify-write operations on shared I²C registers.
+> **Note:** Reading is always available for all channel types, including OUTPUT channels (e.g. relays).
 
 ---
 
 ## Channel Access Method
 
-Almost all IoTextra series digital modules support **both** HOST and I²C access to the same physical channel. The active access method is determined per-channel by the **Interface Type** parameter.
+Almost all IoTextra series digital modules support **both** HOST and I²C access to the same physical channel. The active access method is determined per-channel by Tasmota configuration and changes made through variables within TCA9534.be berry driver script.
 
 ```
-Channel
-  ├── Interface Type: HOST  →  Access via AP0–AP7 on HOST connector
-  └── Interface Type: I2C   →  Access via P0–P7 on TCA9534 at configured I²C address
+HARDWARE_MODE
+  ├── 'gpio'  →  Access via AP0–AP7 on HOST connector
+  └── 'i2c'   →  Access via P0–P7 on TCA9534/TCA9534A at configured I²C address
 ```
