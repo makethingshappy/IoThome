@@ -1,6 +1,6 @@
 # ⚡ IoThome Setup Guide
 
-This guide walks you through setting up an IoThome node from scratch — from flashing Tasmota onto your ESP32 to having your Berry drivers running and publishing sensor data.
+This guide walks you through setting up an IoThome node from scratch, from flashing Tasmota onto your ESP32 to having your Berry drivers running and publishing sensor data.
 
 **Assumed knowledge:** You have worked with ESP32 boards before and are comfortable with basic hardware setup, but Tasmota is new to you.
 
@@ -52,11 +52,11 @@ Tasmota is flashed using the browser-based web installer — no drivers or comma
 
 **2.** Open [https://tasmota.github.io/install/](https://tasmota.github.io/install/) in Chrome or Edge.
 
-> ⚠️ Firefox does not support the Web Serial API. Use Chrome or Edge.
+> ⚠️ Firefox and Safari does not support the Web Serial API. Use Chrome or Edge.
 
 **3.** Click **Connect** and select your ESP32's COM port from the popup list.
 
-**4.** Once connected, click **Install** — but do **not** use the default firmware listed on the page. Instead, use the custom binary from this repo:
+**4.** Once connected, click **Install**, but do **not** use the default firmware listed on the page. Instead, use the custom binary from this repo:
 
 - Scroll down and look for a **"Select file"** or **"Custom firmware"** option
 - Select the `.bin` file you downloaded from `/Tasmota_Binaries`
@@ -73,23 +73,23 @@ Tasmota is flashed using the browser-based web installer — no drivers or comma
 
 After flashing, Tasmota boots into access point mode so you can give it your Wi-Fi credentials.
 
-**1.** On your phone or laptop, scan for Wi-Fi networks. You will see one named `tasmota-XXXXXX`.
+**1.** On your phone or laptop, scan for Wi-Fi networks. You will see one named `tasmota-XXXXXX`. You can also use the Web UI from Tasmotas website to connect your device to Wi-Fi.
 
-**2.** Connect to it — no password is required.
+**2.** Connect to it, no password is required.
 
-**3.** A captive portal should open automatically. If it does not, navigate to `http://192.168.4.1` in your browser.
+**3.** A captive portal should open automatically. If it does not, navigate to Tasmota Web UI in your browser and check if you can change Wi-Fi network and credentials.
 
 **4.** Enter your Wi-Fi SSID and password, then click **Save**.
 
 **5.** The device will disconnect from the hotspot and join your network. Reconnect your computer to your normal Wi-Fi.
 
-**6.** Find the device's IP address — you can check your router's DHCP client list, or use a network scanner. The device also announces itself via mDNS as `tasmota-XXXXXX.local`.
+**6.** Find the device's IP address, you can check your router's DHCP client list, or use a network scanner. The device also announces itself via mDNS as `tasmota-XXXXXX.local` or a Fixed IP Address like `192.168.1.77`.
 
 **7.** Open `http://<device-ip>` in your browser. You should see the Tasmota web UI.
 
 ---
 
-## 4. Apply Your IoTextra GPIO Template
+## 4. Apply Your IoTextra Tasmota Template
 
 Tasmota needs to know which GPIO pins are connected to what. IoThome provides pre-built templates for each IoTextra module.
 
@@ -113,7 +113,7 @@ IoTextra modules communicate over I²C. Verify Tasmota has I²C enabled after ap
 
 **1.** In the Tasmota web UI go to **Configuration → Configure Module**.
 
-**2.** Confirm that your SDA and SCL pins are assigned. These should already be set correctly if you applied a template from this repo — but double-check against your board's schematic.
+**2.** Confirm that your SDA and SCL pins are assigned. These should already be set correctly if you applied a template from this repo, but double-check against your board's schematic.
 
 **3.** Go to **Consoles → Console** and type:
 
@@ -149,7 +149,7 @@ Berry drivers are `.be` files that run directly on the ESP32 inside Tasmota. Upl
 
 **3.** Click **Upload** for each file. You will see it appear in the file list once uploaded successfully.
 
-> ⚠️ Do not restart yet — configure the drivers first (next step).
+> ⚠️ Do not restart yet, configure the drivers first (next step).
 
 ---
 
@@ -157,7 +157,7 @@ Berry drivers are `.be` files that run directly on the ESP32 inside Tasmota. Upl
 
 Each driver has a short configuration block at the top of the file. You need to edit these values to match your specific hardware before running the drivers.
 
-The easiest way to edit them is directly in the Tasmota file manager:
+The easiest way to edit them is directly in the Tasmota file manager or via a text editor on your PC:
 
 **1.** In **Consoles → Manage File System**, click the edit icon (✏️) next to the driver file.
 
