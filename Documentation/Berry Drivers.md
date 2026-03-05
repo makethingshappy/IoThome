@@ -300,6 +300,12 @@ P3 (CH4) IN     LOW
 | H  | H  | L  | `0x26`  |
 | H  | H  | H  | `0x27`  |
 
+Make sure to disable the following I2C driver in tasmota when using TCA9534 by inputting the following command in Tasmota CMD console:
+
+```
+I2cDriver36 0
+```
+
 ### TCA9534A (0x38 – 0x3F)
 
 | A2 | A1 | A0 | Address |
