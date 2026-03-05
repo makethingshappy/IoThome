@@ -328,15 +328,15 @@ TCA9534 and TCA9534A are pin-compatible and can coexist on the same I²C bus bec
 
 ## Installation
 
-1. Copy `ads1115.be` and/or `tca9534.be` to your Tasmota file system via **Consoles → Manage File System**.
+1. Copy `ADS1115Data.be` and/or `TCA9534.be` to your Tasmota file system via **Consoles → Manage File System**.
 2. Edit the configuration variables at the top of each file to match your hardware.
 3. Add an `autoexec.be` (or append to an existing one) to load the drivers on boot:
 
 ```berry
-load('ads1115.be')
-load('tca9534.be')
+load('ADS1115Data.be')
+load('TCA9534.be')
 ```
 
 4. Restart Tasmota. The drivers register themselves automatically and begin publishing sensor data.
 
-> **Tasmota requirement:** I²C must be enabled in firmware and bus pins (SDA/SCL) must be assigned in your GPIO template before the I²C drivers will detect their chips.
+> **Tasmota requirement:** I²C must be enabled in firmware and bus pins (SDA/SCL or GPIO) must be assigned in your tasmota template before the I²C drivers will detect their chips.
