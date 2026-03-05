@@ -28,12 +28,11 @@ The TCA9534 A2/A1/A0 pins select one of eight addresses:
 | 1  | 1  | 0  | 0100110             | 0x26 |
 | 1  | 1  | 1  | 0100111             | 0x27 |
 
-Make sure to disable the following I2C driver in tasmota when using TCA9534 using the following command in Tasmota console:
+Make sure to disable the following I2C driver in tasmota when using TCA9534 by inputting the following command in Tasmota CMD console:
 
 ```
 I2cDriver36 0
 ```
-
 
 ---
 
@@ -64,8 +63,8 @@ Each digital channel is defined by the following parameters:
 |------------------|-----------------------------------------------------------------------------|
 | IOEXPANDER_PINCONFIG | 8-bit binary `[P7][P6][P5][P4][P3][P2][P1][P0]` `1=input`, `0=output`, `MSB to LSB (P7 to P0)`|
 | HARDWARE_MODE        | `gpio` (direct pin on HOST connector) or `I2C` (via TCA9534/TCA9534A)   |
-| IOEXPANDER_ADDRESS   | TCA9534 bus address — applicable only when Interface Type = `I2C`       |
-| Channel Number       | Pin index `0–7`. Maps to `AP0–AP7` (HOST) or `P0–P7` (TCA9534)          |
+| IOEXPANDER_ADDRESS   | TCA9534/TCA9534A bus address — applicable only when Interface Type = `I2C`       |
+| Channel Number       | Tasmota Channel `1-8`, Pin index `0–7`. Maps to `AP0–AP7` (HOST) or `P0–P7` (TCA9534/TCA9534A)          |
 
 ### HOST Connector Pin Map
 
@@ -115,7 +114,7 @@ Example:
 
 ## Channel Access Method
 
-Almost all IoTextra series digital modules support **both** HOST and I²C access to the same physical channel. The active access method is determined per-channel by Tasmota configuration and changes made through variables within TCA9534.be berry driver script.
+Almost all IoTextra series digital modules support **both** GPIO and I²C access to all channels. The active access method is determined per-channel by Tasmota configuration and changes made through variables within TCA9534.be berry driver script.
 
 ```
 HARDWARE_MODE
