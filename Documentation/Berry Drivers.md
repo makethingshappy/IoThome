@@ -1,4 +1,4 @@
-# ADS1115 & TCA9534 Berry Drivers for Tasmota
+# IoThome Berry Drivers for Tasmota
 
 > **Author:** Arshia Keshvari ([@TeslaNeuro](https://github.com/TeslaNeuro)) · MakeThingsHappy.io  
 > **License:** MIT
