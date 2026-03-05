@@ -74,18 +74,18 @@ Each digital channel is defined by the following parameters:
 | 6           | AP6      |
 | 7           | AP7      |
 
-### TCA9534 Contact Map
+### TCA9534/TCA9534A Contact Map
 
 | Channel No. | TCA9534 Pin |
 |:-----------:|:-----------:|
-| 0           | P0          |
-| 1           | P1          |
-| 2           | P2          |
-| 3           | P3          |
-| 4           | P4          |
-| 5           | P5          |
-| 6           | P6          |
-| 7           | P7          |
+| 1           | P0          |
+| 2           | P1          |
+| 3           | P2          |
+| 4           | P3          |
+| 5           | P4          |
+| 6           | P5          |
+| 7           | P6          |
+| 8           | P7          |
 
 ---
 
