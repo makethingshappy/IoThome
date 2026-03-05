@@ -112,12 +112,15 @@ Example:
 
 ---
 
-## Channel Access Method
+## HARDWARE_MODE
 
-Almost all IoTextra series digital modules support **both** GPIO and I²C access to all channels. The active access method is determined per-channel by Tasmota configuration and changes made through variables within TCA9534.be berry driver script.
+Almost all IoTextra series digital modules support **both** GPIO and I²C access to all channels. The active access method is determined per-channel by Tasmota configuration and changes made through variables within TCA9534.be berry driver scripts.
 
 ```
 HARDWARE_MODE
   ├── 'gpio'  →  Access via AP0–AP7 on HOST connector
   └── 'i2c'   →  Access via P0–P7 on TCA9534/TCA9534A at configured I²C address
 ```
+
+<img width="349" height="573" alt="image" src="https://github.com/user-attachments/assets/5f6940ac-63ca-4185-bdd7-26f6c900305b" />
+
