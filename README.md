@@ -11,8 +11,6 @@ The **Make Things Happy** platform eliminates this gap by standardizing I/O hard
 
 To unify these hardware options for smart home users, we created **IoThome**.
 
----
-
 ## 🔎 What Is IoThome?
 
 IoThome is a software layer that sits on top of Tasmota and the IoTextra hardware family. It provides ready-to-use Berry drivers, templates, and automation logic so you can go from hardware assembly to a running smart home node without writing firmware from scratch.
@@ -25,8 +23,6 @@ IoThome is a software layer that sits on top of Tasmota and the IoTextra hardwar
 | **IoThome templates** | Pre-configured GPIO mappings for each supported module |
 
 No external server, hub, or cloud dependency is required. Every node runs autonomously and locally.
-
----
 
 ## 🚀 Home Automation Workflow
 
@@ -61,7 +57,6 @@ A typical IoThome node follows this flow from hardware to running automation:
 │     Node runs autonomously — no external server required          │
 └─────────────────────────────────────────────────────────────────--┘
 ```
----
 
 ## 📥 Installation & Quick Start
 
@@ -69,15 +64,11 @@ See full setup instructions in:
 
 📄 **[`SETUP.md`](./Documentation/SETUP.md)**
 
----
-
 ## 📹 Demo Videos
 
 - [▶️ IoThome Hardware Demo](x)
 
 - [▶️ IoThome Workflow Demo](xx)
-
----
 
 ## 📁 Repository Structure
 
@@ -103,8 +94,6 @@ IoThome/
 ├── LICENSE                  # MIT License
 └── README.md
 ```
-
----
 
 ## 📜 Licensing
 
