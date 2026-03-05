@@ -73,6 +73,14 @@ See full setup instructions in:
 
 ---
 
+## 📹 Demo Videos
+
+- [▶️ IoThome Hardware Demo](x)
+
+- [▶️ IoThome Workflow Demo](xx)
+
+---
+
 ## 📁 Repository Structure
 
 ```
