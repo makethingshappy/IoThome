@@ -24,6 +24,33 @@ IoThome is a software layer that sits on top of Tasmota and the IoTextra hardwar
 
 No external server, hub, or cloud dependency is required. Every node runs autonomously and locally.
 
+## 🛠️ Supported Hardware
+
+### Microcontrollers and System On Modules (SoM)
+* [**IoTbase PICO**](https://makethingshappy.io/products/iotbase-pico) - Compatible with Waveshare ESP32-S3 PICO and any ESP32 PICO based device
+* [**IoTbase NANO**](https://makethingshappy.io/products/iotbase-nano) - Arduino Nano ESP32 or ESP32-S3 or Waveshare ESP32-S3 Nano
+* [**IoTsmart ESP32-S3**](https://makethingshappy.io/products/iotsmart-esp32-s3) - Tiny Adaptor Board with Cable is required for flashing
+* [**IoTsmart XIAO**](https://makethingshappy.io/products/iotsmart-xiao) - Compatible with ESP32 based devices / Tiny Adaptor Board with Cable is required for flashing
+
+*IoTsmart modules are System-on-Module (SOM) microcontroller boards that provide the primary compute and control functionality for the system.
+Each module integrates a complete MCU environment, and different form factors (soldered SoM, slot-based modules such as the IoTsmart XIAO, etc.) are treated as implementation variations rather than separate device classes.*
+
+### Supported IoTextra Board Categories
+
+#### Digital I/O Boards
+* [**IoTextra Input**](https://makethingshappy.io/products/iotextra-input)
+* [**IoTextra Octal2**](https://makethingshappy.io/products/iotextra-octal2)
+* [**IoTextra Relay2**](https://makethingshappy.io/products/iotextra-relay2)
+* [**IoTextra SSR Small**](https://makethingshappy.io/products/iotextra-ssr-small)
+* Custom digital mezzanines
+
+#### Analog or Combo I/O Boards
+* [**IoTextra Analog**](https://makethingshappy.io/products/iotextra-analog)
+* [**IoTextra Analog 2**](https://makethingshappy.io/products/iotextra-analog)
+* [**IoTextra Analog 3**](https://makethingshappy.io/products/iotextra-analog3)
+* [**IoTextra Combo**](https://makethingshappy.io/products/iotextra-combo)
+* Custom analog mezzanines
+
 ## 🚀 Home Automation Workflow
 
 A typical IoThome node follows this flow from hardware to running automation:
