@@ -252,7 +252,7 @@ var HARDWARE_MODE        = "i2c"       # "i2c" or "gpio"
 
 ## 8. Create autoexec.be
 
-Tasmota runs `autoexec.be` automatically on every boot. You need to create this file to tell Tasmota which drivers to load.
+Tasmota runs `autoexec.be` automatically on every boot. You need to create this file to tell Tasmota which drivers to load or application code to run.
 
 **1.** In **Consoles → Manage File System**, check whether `autoexec.be` already exists.
 
@@ -330,7 +330,7 @@ Your IoThome node is now running. Here is what to explore next:
 | Goal | Where to look |
 |---|---|
 | Understand all driver configuration options | [`/Documentation/Berry Drivers.md`](./Documentation/) |
-| Add automation logic (e.g. control relays based on sensor readings) | [`/Application_Scripts`](./Application_Scripts) |
+| Add automation logic with a ready made `autoexec.be` application script (e.g. control relays based on sensor readings) | [`/Application_Scripts`](./Application_Scripts) |
 | Connect to Home Assistant or Node-RED | Configure MQTT under **Configuration → Configure MQTT** in Tasmota |
 | Add more IoTextra modules | Repeat steps 4–8 for each additional module |
 | Troubleshoot I²C detection issues | Re-run `I2CScan` in the console and verify wiring against the address tables in [`/Documentation`](./Documentation/) |
