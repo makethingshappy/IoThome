@@ -89,7 +89,7 @@ A typical IoThome node follows this flow from hardware to running automation:
 
 See full setup instructions in:
 
-📄 **[`SETUP.md`](./Documentation/SETUP.md)**
+📄 **[`Setup.md`](./Documentation/Setup.md)**
 
 ## 📹 Demo Videos
 
