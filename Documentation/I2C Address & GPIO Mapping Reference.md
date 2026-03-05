@@ -55,9 +55,9 @@ The TCA9534**A** uses a different base address (0x38–0x3F):
 
 ---
 
-## GPIO Map — Digital Channel Parameters
+## GPIO Map — Digital I/O Module Parameters
 
-Each digital channel is defined by the following parameters:
+Each digital I/O module is defined by the following parameters:
 
 | Parameter        | Description                                                                 |
 |------------------|-----------------------------------------------------------------------------|
