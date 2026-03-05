@@ -57,7 +57,7 @@ var CHANNEL_RANGES = [0x02, 0x22, 0x82, 0x03]
 
 | Variable | What It Controls | When to Change |
 |---|---|---|
-| `SHUNT_RESISTOR` | Resistance (Ω) of the current-sense shunt on your board | Change to `0.120` if your board has a 0.120 Ω shunt |
+| `SHUNT_RESISTOR` | Resistance (Ω) of the current-sense shunt on your board | Change to `0.120` or `0.249` if your board has a 120Ω or 249Ω shunt resistor |
 | `HARDWARE_GAIN` | Voltage divider ratio on the analog input circuit | Match to your board's resistor configuration (see below) |
 | `CHANNEL_RANGES` | Measurement type and range per channel | Set one range code per channel you are using |
 
