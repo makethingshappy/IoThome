@@ -204,7 +204,7 @@ The driver communicates directly with the TCA9534 chip over I²C. Use this when 
 The driver routes through Tasmota's native GPIO and switch subsystem instead of the I²C chip. Use this when your channels are wired directly to ESP32/ESP8266 GPIO pins defined in your Tasmota template.
 
 - `IOEXPANDER_ADDRESS` is ignored in this mode.
-- Output channels map to Tasmota `Relay` assignments in order.
+- Output channels map to Tasmota `Relay_i` assignments in order.
 - Input channels map to Tasmota `Switch` assignments in order.
 - No physical TCA9534 chip is required.
 
