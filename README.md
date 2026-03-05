@@ -1,6 +1,6 @@
 ## 🏡 IoThome 
 
-A standalone ecosystem integrating the IoTextra series modules with **Tasmota** on any ESP32 based devices. It enables automation logic for smart home IoT applications, such as smart farming, without requiring external controllers or servers.
+A standalone ecosystem integrating the IoTextra series modules with **Tasmota** on ESP32 based devices. It enables automation logic for smart home IoT applications, such as smart farming, without requiring external controllers or servers.
 
 ---
 
