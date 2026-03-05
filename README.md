@@ -85,7 +85,7 @@ IoThome/
 ├── Documentation/           # Configuration / setup guides and parameter references
 │
 │
-├── Media/                   # Images and diagrams used in documentation
+├── Media/                   # Images and Video links
 │
 ├── Tasmota_Binaries/        # Pre-built Tasmota firmware for supported boards
 │
