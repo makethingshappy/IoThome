@@ -132,6 +132,20 @@ If you see your module's expected address(es) listed here, I²C is working corre
 
 > 📖 See [`/Documentation/Berry Drivers.md`](./Documentation/) for the I²C address reference tables for ADS1115 and TCA9534/TCA9534A.
 
+### ⚠️ Disable Conflicting Tasmota I²C Drivers
+
+Tasmota includes built-in drivers for many I²C devices. Some of these share addresses with the TCA9534 and TCA9534A — most notably the HMI display driver, which also uses address `0x27`. If a conflicting built-in driver claims your device first, the TCA9534 Berry driver will not be able to communicate with it correctly.
+
+**Disable the conflicting driver before proceeding.** Run the following in the Tasmota console:
+
+```
+I2cDriver36 0
+```
+
+This disables Tasmota's built-in HMI driver (I²C driver index 36), freeing address `0x27` and the surrounding range for exclusive use by the TCA9534 Berry driver.
+
+To confirm the conflict is resolved, re-run `I2CScan` — the address should still appear, but it will no longer be claimed by a built-in driver. The Berry driver will take ownership on next boot.
+
 ---
 
 ## 6. Upload Berry Drivers
@@ -176,6 +190,47 @@ var CHANNEL_RANGES = [0x02, 0x22, 0x82, 0x03]  # One range code per channel
 | Shunt resistor value | Printed on or in the schematic for your IoTextra analog board |
 | Hardware gain | See the gain table in [`/Documentation/Berry Drivers.md`](./Documentation/) |
 | Channel range codes | See the range code table in [`/Documentation/Berry Drivers.md`](./Documentation/) |
+
+**Configure ADS1115 boot behaviour in Tasmota:**
+
+Tasmota's built-in ADS1115 sensor must be set to differential mode (`D`) on boot so it matches what the Berry driver expects. Do this with a Tasmota Rule.
+
+Run the following two commands in the Tasmota console:
+
+```
+Rule1 on system#boot do sensor12 d0 endon
+Rule1 1
+```
+
+The first command creates a rule that sets the ADS1115 to differential mode channel 0 every time the device boots. The second command enables the rule.
+
+> ⚠️ **Why `system#boot` and not `system#init`?**  
+> `system#boot` fires after the full Tasmota stack is ready — I²C, sensors, and drivers are all initialised. `system#init` fires earlier in the boot sequence before I²C is fully available, which can cause the command to silently fail. Use `system#boot` unless you have a specific reason not to.
+
+**Sensor12 mode and gain reference:**
+
+`sensor12` takes a two-character argument combining **mode** (`m`) and **gain** (`g`):
+
+| Part | Option | Meaning |
+|---|:---:|---|
+| **Mode** | `S` | Single-ended — channels 0–3 read AIN0 to AIN3 independently |
+| **Mode** | `D` | Differential — channel 0 = AIN0−AIN1, channel 1 = AIN2−AIN3 |
+| **Gain** | `0` | ±6.144 V full range |
+| **Gain** | `1` | ±4.096 V full range |
+| **Gain** | `2` | ±2.048 V full range |
+| **Gain** | `3` | ±1.024 V full range |
+| **Gain** | `4` | ±0.512 V full range |
+| **Gain** | `5` | ±0.256 V full range |
+
+The IoThome ADS1115 Berry driver uses **differential mode** (`D`). The gain is handled per-channel inside the driver via `CHANNEL_RANGES` — the `sensor12` gain argument is overridden by the Berry driver at runtime.
+
+**Examples:**
+
+```
+Sensor12 D0    # Differential mode, 6.144V range (used by IoThome driver)
+Sensor12 S2    # Single-ended mode, 2.048V range
+Sensor12 D1    # Differential mode, 4.096V range
+```
 
 ### TCA9534 (`TCA9534.be`)
 
