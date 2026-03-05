@@ -22,7 +22,7 @@ IoThome is a software layer that sits on top of Tasmota and the IoTextra hardwar
 | Layer | Role |
 |---|---|
 | **IoTextra modules** | Standardized I/O hardware (analog inputs, digital I/O, etc.) |
-| **Tasmota** | Open-source ESP32 firmware handling connectivity, OTA, and MQTT |
+| **Tasmota** | Open-source ESP32 firmware handling connectivity, OTA, and much more |
 | **IoThome Berry Drivers & Application Scripts** | Application-level logic running on-device inside Tasmota |
 | **IoThome templates** | Pre-configured GPIO mappings for each supported module |
 
