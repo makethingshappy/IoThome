@@ -63,11 +63,6 @@ A typical IoThome node follows this flow from hardware to running automation:
 │     Node runs autonomously — no external server required          │
 └─────────────────────────────────────────────────────────────────--┘
 ```
-
----
-
-## ⚡ Quick Start
-
 ---
 
 ## 📥 Installation & Quick Start
