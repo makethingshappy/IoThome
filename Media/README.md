@@ -9,4 +9,4 @@ This folder contains images, video links and diagrams used across IoThome docume
 
 All IoThome video content is hosted externally on the **MakeThingsHappy Dropbox folder** rather than stored in this repository.
 
-➡️ [MakeThingsHappy Dropbox](xy)
+➡️ [MakeThingsHappy Dropbox](https://www.dropbox.com/scl/fo/l3qgnkeu3vhnfe8sgrnc7/APK5KJsPHwxPtKM_G8dlJOQ?rlkey=u0706p09f1iodltqegt962uh8&st=xewx94wr&dl=0)
