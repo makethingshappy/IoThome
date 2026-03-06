@@ -1,5 +1,8 @@
 # 📁 Media
 
+> **Author:** Arshia Keshvari ([@TeslaNeuro](https://github.com/TeslaNeuro)) · MakeThingsHappy.io  
+> **License:** MIT
+
 This folder contains images, video links and diagrams used across IoThome documentation and repository.
 
 ## 🎥 Videos
