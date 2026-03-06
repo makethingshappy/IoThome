@@ -93,9 +93,7 @@ See full setup instructions in:
 
 ## 📹 Demo Videos
 
-- [▶️ IoThome Hardware Demo](x)
-
-- [▶️ IoThome Workflow Demo](xx)
+- [▶️ IoThome Smart Farm Demo](https://www.dropbox.com/scl/fi/xlf9rtpuqjcjmh14j3t56/Smart-Farm-Demo-IoTextra-Combo-IoThome.mp4?rlkey=2maaingyoptgajm5k6btwlqop&st=5jdrwy80&dl=0)
 
 ## 📁 Repository Structure
 
