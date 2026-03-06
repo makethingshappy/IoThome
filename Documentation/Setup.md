@@ -1,5 +1,8 @@
 # ⚡ IoThome Setup Guide
 
+> **Author:** Arshia Keshvari ([@TeslaNeuro](https://github.com/TeslaNeuro)) · MakeThingsHappy.io  
+> **License:** MIT
+
 This guide walks you through setting up an IoThome node from scratch, from flashing Tasmota onto your ESP32 to having your Berry drivers running and publishing sensor data.
 
 **Assumed knowledge:** You have worked with ESP32 boards before and are comfortable with basic hardware setup, but Tasmota is new to you.
