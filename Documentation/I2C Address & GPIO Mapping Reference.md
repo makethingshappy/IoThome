@@ -1,5 +1,8 @@
 # I²C Address & GPIO Reference
 
+> **Author:** Arshia Keshvari ([@TeslaNeuro](https://github.com/TeslaNeuro)) · MakeThingsHappy.io  
+> **License:** MIT
+
 ## ADS1115 — I²C Address Table
 
 The ADS1115 ADDR pin selects one of four addresses:
