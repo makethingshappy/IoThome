@@ -1,4 +1,4 @@
-# 🔗 Tasmota Templates
+# 🔗 IoTbase Nano - ESP32-S3 Nano Tasmota Templates
 
 IoTextra Input:
 
