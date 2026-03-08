@@ -63,6 +63,10 @@ Tasmota is flashed using the browser-based web installer — no drivers or comma
   
 <img width="400" height="642" alt="image" src="https://github.com/user-attachments/assets/386dbbb3-5f0e-4247-b521-2ee77427f15d" />
 
+</p>
+
+<p align="center">
+
 <img width="400" height="1788" alt="image" src="https://github.com/user-attachments/assets/d3791d65-61c1-4691-a7f9-cfefde37ca92" />
 
 </p>
