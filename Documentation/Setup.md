@@ -308,6 +308,12 @@ P0 (CH1) OUT     OFF
 P1 (CH2) IN      HIGH
 ```
 
+Example Web UI display for `Smart Farm` application script running on `IoTextra Combo`:
+
+<p align="center">
+  <img width="300" height="1928" alt="image" src="https://github.com/user-attachments/assets/0c43140b-9626-4759-ad6d-132b0e4b211f" />
+</p>
+
 ### Check telemetry JSON
 
 In the console, type:
