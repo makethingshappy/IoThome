@@ -16,7 +16,7 @@ This guide walks you through setting up an IoThome node from scratch, from flash
 1. [What You Need](#1-what-you-need)
 2. [Flash Tasmota](#2-flash-tasmota)
 3. [Connect to Your Network](#3-connect-to-your-network)
-4. [Apply Your IoTextra GPIO Template](#4-apply-your-iotextra-gpio-template)
+4. [Apply Your IoTextra Tasmota Template](#4-apply-your-iotextra-tasmota-template)
 5. [Enable I²C](#5-enable-i2c)
 6. [Upload Berry Drivers](#6-upload-berry-drivers)
 7. [Configure Your Drivers](#7-configure-your-drivers)
@@ -110,7 +110,7 @@ Tasmota needs to know which GPIO pins are connected to what. IoThome provides pr
 
 ---
 
-## 5. Enable I²C
+## 5. Enable I2C
 
 IoTextra modules communicate over I²C. Verify Tasmota has I²C enabled after applying your template.
 
