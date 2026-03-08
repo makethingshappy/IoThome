@@ -53,16 +53,26 @@ Tasmota is flashed using the browser-based web installer — no drivers or comma
 
 **1.** Plug your ESP32 into your computer via USB.
 
-**2.** Open [https://tasmota.github.io/install/](https://tasmota.github.io/install/) in Chrome or Edge.
+**2.** Open [https://tasmota.github.io/install/](https://tasmota.github.io/install/) or [https://tasmota.github.io/docs/Getting-Started/](https://tasmota.github.io/docs/Getting-Started/) in Chrome or Edge.
 
 > ⚠️ Firefox and Safari does not support the Web Serial API. Use Chrome or Edge.
 
 **3.** Click **Connect** and select your ESP32's COM port from the popup list.
 
+<p align="center">
+  
+<img width="400" height="642" alt="image" src="https://github.com/user-attachments/assets/386dbbb3-5f0e-4247-b521-2ee77427f15d" />
+
+<img width="400" height="1788" alt="image" src="https://github.com/user-attachments/assets/d3791d65-61c1-4691-a7f9-cfefde37ca92" />
+
+</p>
+
 **4.** Once connected, click **Install**, but do **not** use the default firmware listed on the page. Instead, use the custom binary from this repo:
 
 - Scroll down and look for a **"Select file"** or **"Custom firmware"** option
 - Select the `.bin` file you downloaded from `/Tasmota_Binaries`
+
+> ⚠️ Always use the Tasmota firmware appropriate to your ESP32 device, for stability reasons, it is recommended to upload the custom binary from this repo.
 
 **5.** Check **Erase device** if this is a fresh install or the board has been previously flashed with different firmware.
 
