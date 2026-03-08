@@ -100,7 +100,7 @@ After flashing, Tasmota boots into access point mode so you can give it your Wi-
 
 **5.** The device will disconnect from the hotspot and join your network. Reconnect your computer to your normal Wi-Fi.
 
-**6.** Find the device's IP address, you can check your router's DHCP client list, or use a network scanner. The device also announces itself via mDNS as `tasmota-XXXXXX.local` or a Fixed IP Address like `192.168.1.77`.
+**6.** Find the device's IP address, you can check your router's DHCP client list, or use a network scanner. The device also announces itself via mDNS as `tasmota-XXXXXX.local` or a Fixed IP Address like `192.168.1.77`. If in doubt, please refer to `Tasmota Getting Started` page.
 
 **7.** Open `http://<device-ip>` in your browser. You should see the Tasmota web UI.
 
@@ -162,6 +162,8 @@ I2cDriver36 0
 This disables Tasmota's built-in HMI driver (I²C driver index 36), freeing address `0x27` and the surrounding range for exclusive use by the TCA9534 Berry driver.
 
 To confirm the conflict is resolved, re-run `I2CScan` — the address should still appear, but it will no longer be claimed by a built-in driver. The Berry driver will take ownership on next boot.
+
+> 📖 If you encounter other conflicting drivers, try to disable them using Tasmota's built-in console commands, learn more in [Tasmota's I²C Devices Official Guide](https://tasmota.github.io/docs/I2CDEVICES/)
 
 ---
 
