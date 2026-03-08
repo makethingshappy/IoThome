@@ -82,7 +82,7 @@ Each digital I/O module is defined by the following parameters:
 | 7           | AP6      |
 | 8           | AP7      |
 
-> Depending on the IoTextra module you are using the `HOST` pins may be left unconnected or connected as different Input/Output Channels, always refer the schematic
+> NOTE: Depending on the IoTextra module you are using the `HOST` pins may be left unconnected or connected as different Input/Output Channels, always refer to the schematic
 
 ### TCA9534/TCA9534A Contact Map
 
