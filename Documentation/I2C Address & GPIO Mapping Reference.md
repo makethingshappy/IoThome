@@ -14,6 +14,8 @@ The ADS1115 ADDR pin selects one of four addresses:
 | SDA                 | 1001010             | 0x4A |
 | SCL                 | 1001011             | 0x4B |
 
+> NOTE: The `ADS1115Data.be` driver dynamically identifies ADS1115 ADC's from list of known addresses above, so you don't need to manually set the I2C addresses
+
 ---
 
 ## TCA9534 — I²C Address Table
