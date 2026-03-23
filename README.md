@@ -1,6 +1,6 @@
 ## 🏡 IoThome 
 
-A standalone ecosystem integrating the IoTextra series modules with **Tasmota** on ESP32 based devices. It enables automation logic for smart home IoT applications, such as smart farming, without requiring external controllers or servers.
+A standalone ecosystem integrating the IoTextra, IoTbase and IoTsmart series modules with **Tasmota** on ESP32 based devices. It enables automation logic for smart home IoT applications, such as smart farming, without requiring external controllers or servers.
 
 ## 🌱 Make Things Happy Platform Philosophy
 Modern prototyping tools make it easy to build a demo but extremely hard to transition that prototype into a stable, maintainable product. Teams often redesign hardware from the ground up after using Raspberry Pi, Arduino, or similar prototyping boards, a costly and time-consuming process that burdens long-term support.
