@@ -15,17 +15,17 @@ class ADS7828Data : Driver
 
   #- Channel select bits from Table II in datasheet -#
   #- SD=1 (single-ended), PD1=1 PD0=1 (ref ON, ADC ON) -#
-  static CMD_BASE = 0b10001100  #- SD=1, PD1=1, PD0=1 -#
-
+  static CMD_BASE = 0x8C   #- was 0b10001100: SD=1, PD1=1, PD0=1 -#
+  
   static CHANNEL_BITS = [
-    0b00000000,  #- CH0 -#
-    0b00000100,  #- CH1 -#
-    0b00010000,  #- CH2 -#
-    0b00010100,  #- CH3 -#
-    0b00001000,  #- CH4 -#
-    0b00001100,  #- CH5 -#
-    0b00011000,  #- CH6 -#
-    0b00011100   #- CH7 -#
+    0x00,  #- CH0: was 0b00000000 -#
+    0x04,  #- CH1: was 0b00000100 -#
+    0x10,  #- CH2: was 0b00010000 -#
+    0x14,  #- CH3: was 0b00010100 -#
+    0x08,  #- CH4: was 0b00001000 -#
+    0x0C,  #- CH5: was 0b00001100 -#
+    0x18,  #- CH6: was 0b00011000 -#
+    0x1C   #- CH7: was 0b00011100 -#
   ]
 
   def init(addr, vref)
