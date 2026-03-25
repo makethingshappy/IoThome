@@ -16,7 +16,7 @@
  - Change these values to match your board
  - ======================================== -#
 
-var ADS7828_ADDRESS = 0x4b  #- I2C address: 0x48-0x4B depending on A0/A1 pins -#
+var ADS7828_ADDRESS = 0x4B  #- I2C address: 0x48-0x4B depending on A0/A1 pins -#
 var ADS7828_VREF    = 2.5   #- Internal reference voltage -#
 
 #- ADS7828 Address reference:
@@ -36,22 +36,26 @@ class ADS7828 : Driver
   var vref
   var readings
 
-  #- Command byte constants (hex, Berry has no 0b binary literals)
-   - CMD_BASE = 0x8C = SD=1 (single-ended), PD1=1 PD0=1 (ref ON, ADC ON)
-   - CHANNEL_BITS from Table II of ADS7828 datasheet
+  #- Command byte constants
+   - SD=1 (single-ended) = 0x80
+   - PD1=1 PD0=1 (internal ref ON, ADC ON) = 0x0C
+   - Channel bits from Table II of ADS7828 datasheet (bits 6-4)
   -#
-  static CMD_BASE = 0x8C
+  static CMD_BASE = 0x8C  #- SD=1, PD1=1, PD0=1, CH0 -#
 
   static CHANNEL_BITS = [
-    0x00,  #- CH0 -#
-    0x04,  #- CH1 -#
-    0x10,  #- CH2 -#
-    0x14,  #- CH3 -#
-    0x08,  #- CH4 -#
-    0x0C,  #- CH5 -#
-    0x18,  #- CH6 -#
-    0x1C   #- CH7 -#
+    0x00,  #- CH0: C2=0 C1=0 C0=0 -#
+    0x40,  #- CH1: C2=1 C1=0 C0=0 -#
+    0x10,  #- CH2: C2=0 C1=0 C0=1 -#
+    0x50,  #- CH3: C2=1 C1=0 C0=1 -#
+    0x20,  #- CH4: C2=0 C1=1 C0=0 -#
+    0x60,  #- CH5: C2=1 C1=1 C0=0 -#
+    0x30,  #- CH6: C2=0 C1=1 C0=1 -#
+    0x70   #- CH7: C2=1 C1=1 C0=1 -#
   ]
+
+  static SD_BIT  = 0x80
+  static PD_BITS = 0x0C
 
   def init(i2c_addr, vref)
     self.i2c_addr = i2c_addr
@@ -66,31 +70,36 @@ class ADS7828 : Driver
 
     if self.wire
       print(string.format("ADS7828: found at 0x%02X on bus %i", self.i2c_addr, self.wire.bus))
-      #- Let internal reference settle before first conversion -#
-      #- C38 is 100nF on this board so ~42us typical, tasmota.delay is ms -#
-      tasmota.delay(5)
+      tasmota.delay(10)  #- let internal reference settle -#
     else
       print(string.format("ADS7828: NOT found at 0x%02X - check wiring and A0/A1 pins", self.i2c_addr))
-      print("ADS7828: Valid addresses are 0x48, 0x49, 0x4A, 0x4B")
+      print("ADS7828: valid addresses are 0x48, 0x49, 0x4A, 0x4B")
     end
+  end
+
+  def build_command(ch)
+    return self.SD_BIT | self.CHANNEL_BITS[ch] | self.PD_BITS
   end
 
   def read_channel(ch)
     if !self.wire return -1 end
 
-    var cmd = self.CMD_BASE | self.CHANNEL_BITS[ch]
+    var cmd = self.build_command(ch)
 
-    #- Write command byte to select channel -#
+    #- Write command byte to select channel and trigger conversion -#
     self.wire._begin_transmission(self.i2c_addr)
     self.wire._write(cmd)
     self.wire._end_transmission()
+
+    #- Wait for conversion — datasheet says 6us, tasmota.delay is ms so 1ms is safe -#
+    tasmota.delay(1)
 
     #- Read 2 bytes back -#
     self.wire._request_from(self.i2c_addr, 2)
     var hi = self.wire._read()
     var lo = self.wire._read()
 
-    #- Reconstruct 12-bit value: upper nibble of hi byte is padding zeros -#
+    #- Reconstruct 12-bit value -#
     var raw = ((hi & 0x0F) << 8) | lo
     return raw
   end
@@ -110,7 +119,8 @@ class ADS7828 : Driver
     end
   end
 
-  def every_100ms()
+  def every_second()
+    #- Use every_second instead of every_100ms — 8 channels × 1ms delay = 8ms per scan -#
     self.read_all()
   end
 
