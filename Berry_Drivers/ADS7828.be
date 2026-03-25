@@ -1,59 +1,96 @@
+#- =========================================================
+ - Author: Arshia Keshvari
+ - Role: Independent Developer, Engineer, and Project Author
+ - GitHub: @TeslaNeuro
+ - MakeThingsHappy.io
+ - Last Updated: 2026-03-25
+ - ========================================================= -#
+
+#- ========================================================
+ - ADS7828 12-bit 8-channel I2C ADC Driver for Tasmota
+ - Single-ended mode, internal 2.5V reference
+ - ======================================================== -#
+
 #- ========================================
- - ADS7828 Analog I2C Driver for Tasmota
- - 12-bit, 8-channel, single-ended mode
- - Internal 2.5V reference
+ - ADS7828 Configuration
+ - Change these values to match your board
  - ======================================== -#
 
-var ADS7828_ADDR = 0x48  #- Change to match A0/A1 wiring: 0x48-0x4B -#
-var ADS7828_VREF = 2.5   #- Internal reference voltage -#
+var ADS7828_ADDRESS = 0x48  #- I2C address: 0x48-0x4B depending on A0/A1 pins -#
+var ADS7828_VREF    = 2.5   #- Internal reference voltage -#
 
-class ADS7828Data : Driver
+#- ADS7828 Address reference:
+ - A1=L A0=L -> 0x48
+ - A1=L A0=H -> 0x49
+ - A1=H A0=L -> 0x4A
+ - A1=H A0=H -> 0x4B
+-#
 
+import string
+import global
+
+class ADS7828 : Driver
+
+  var wire
   var i2c_addr
   var vref
-  var readings      #- list of 8 float voltage readings -#
+  var readings
 
-  #- Channel select bits from Table II in datasheet -#
-  #- SD=1 (single-ended), PD1=1 PD0=1 (ref ON, ADC ON) -#
-  static CMD_BASE = 0x8C   #- was 0b10001100: SD=1, PD1=1, PD0=1 -#
-  
+  #- Command byte constants (hex, Berry has no 0b binary literals)
+   - CMD_BASE = 0x8C = SD=1 (single-ended), PD1=1 PD0=1 (ref ON, ADC ON)
+   - CHANNEL_BITS from Table II of ADS7828 datasheet
+  -#
+  static CMD_BASE = 0x8C
+
   static CHANNEL_BITS = [
-    0x00,  #- CH0: was 0b00000000 -#
-    0x04,  #- CH1: was 0b00000100 -#
-    0x10,  #- CH2: was 0b00010000 -#
-    0x14,  #- CH3: was 0b00010100 -#
-    0x08,  #- CH4: was 0b00001000 -#
-    0x0C,  #- CH5: was 0b00001100 -#
-    0x18,  #- CH6: was 0b00011000 -#
-    0x1C   #- CH7: was 0b00011100 -#
+    0x00,  #- CH0 -#
+    0x04,  #- CH1 -#
+    0x10,  #- CH2 -#
+    0x14,  #- CH3 -#
+    0x08,  #- CH4 -#
+    0x0C,  #- CH5 -#
+    0x18,  #- CH6 -#
+    0x1C   #- CH7 -#
   ]
 
-  def init(addr, vref)
-    self.i2c_addr = addr
+  def init(i2c_addr, vref)
+    self.i2c_addr = i2c_addr
     self.vref = vref
     self.readings = []
+
     for i : 0..7
       self.readings.push(0.0)
     end
 
-    if tasmota.i2c_enabled(self.i2c_addr)
-      print(string.format("ADS7828: found at 0x%02X", self.i2c_addr))
+    self.wire = tasmota.wire_scan(self.i2c_addr)
+
+    if self.wire
+      print(string.format("ADS7828: found at 0x%02X on bus %i", self.i2c_addr, self.wire.bus))
+      #- Let internal reference settle before first conversion -#
+      #- C38 is 100nF on this board so ~42us typical, tasmota.delay is ms -#
+      tasmota.delay(5)
     else
-      print(string.format("ADS7828: NOT found at 0x%02X - check wiring and A0/A1", self.i2c_addr))
+      print(string.format("ADS7828: NOT found at 0x%02X - check wiring and A0/A1 pins", self.i2c_addr))
+      print("ADS7828: Valid addresses are 0x48, 0x49, 0x4A, 0x4B")
     end
   end
 
   def read_channel(ch)
+    if !self.wire return -1 end
+
     var cmd = self.CMD_BASE | self.CHANNEL_BITS[ch]
 
-    #- Write command byte -#
-    wire.write(self.i2c_addr, cmd, -1, 1)
+    #- Write command byte to select channel -#
+    self.wire._begin_transmission(self.i2c_addr)
+    self.wire._write(cmd)
+    self.wire._end_transmission()
 
     #- Read 2 bytes back -#
-    var hi = wire.read(self.i2c_addr, -1, 1)
-    var lo = wire.read(self.i2c_addr, -1, 1)
+    self.wire._request_from(self.i2c_addr, 2)
+    var hi = self.wire._read()
+    var lo = self.wire._read()
 
-    #- Reconstruct 12-bit result -#
+    #- Reconstruct 12-bit value: upper nibble of hi byte is padding zeros -#
     var raw = ((hi & 0x0F) << 8) | lo
     return raw
   end
@@ -63,16 +100,14 @@ class ADS7828Data : Driver
   end
 
   def read_all()
-    var ok = true
+    if !self.wire return end
+
     for ch : 0..7
       var raw = self.read_channel(ch)
       if raw >= 0
         self.readings[ch] = self.raw_to_voltage(raw)
-      else
-        ok = false
       end
     end
-    return ok
   end
 
   def every_100ms()
@@ -80,7 +115,7 @@ class ADS7828Data : Driver
   end
 
   def web_sensor()
-    if !self.readings return nil end
+    if !self.wire return nil end
 
     var msg = ""
     for ch : 0..7
@@ -90,7 +125,7 @@ class ADS7828Data : Driver
   end
 
   def json_append()
-    if !self.readings return nil end
+    if !self.wire return nil end
 
     var msg = ",\"ADS7828\":{"
     for ch : 0..7
@@ -103,5 +138,5 @@ class ADS7828Data : Driver
 
 end
 
-ADS7828Data = ADS7828Data(ADS7828_ADDR, ADS7828_VREF)
-tasmota.add_driver(ADS7828Data)
+global.ads7828 = ADS7828(ADS7828_ADDRESS, ADS7828_VREF)
+tasmota.add_driver(global.ads7828)
