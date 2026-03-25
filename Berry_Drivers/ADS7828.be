@@ -16,7 +16,7 @@
  - Change these values to match your board
  - ======================================== -#
 
-var ADS7828_ADDRESS = 0x48  #- I2C address: 0x48-0x4B depending on A0/A1 pins -#
+var ADS7828_ADDRESS = 0x4b  #- I2C address: 0x48-0x4B depending on A0/A1 pins -#
 var ADS7828_VREF    = 2.5   #- Internal reference voltage -#
 
 #- ADS7828 Address reference:
