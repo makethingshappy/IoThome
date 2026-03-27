@@ -81,6 +81,7 @@ class ADS7828 : Driver
 
   static SD_BIT  = 0x80
   static PD_BITS = 0x0C
+  static GAIN = 0.4752 #- front-end differential amp attenuation: R48/R52 -#
 
   def init(i2c_addr, vref)
     self.i2c_addr = i2c_addr
@@ -130,7 +131,8 @@ class ADS7828 : Driver
   end
 
   def raw_to_voltage(raw)
-    return raw * self.vref / 4096.0
+    var adc_voltage = raw * self.vref / 4095.0
+    return adc_voltage / self.GAIN  #- scale back to real-world voltage -#
   end
 
   def read_all()
@@ -145,7 +147,7 @@ class ADS7828 : Driver
   end
 
   def every_100ms()
-    #- Use every_100ms — if using 8 channels × 1ms delay = 8ms per scan -#
+    #- Use every_100ms — 8 channels × 1ms delay = 8ms per scan -#
     self.read_all()
   end
 
