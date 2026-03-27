@@ -9,4 +9,5 @@
 
 # We load both drivers, so that they run in the background / startup
 load("ADS1115Data.be")
+#load("ADS7828.be") # uncommment and comment ADS1115 if using IoTextra Analog 3 which uses ADS7828
 load("TCA9534.be")
