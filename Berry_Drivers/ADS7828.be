@@ -144,8 +144,8 @@ class ADS7828 : Driver
     end
   end
 
-  def every_second()
-    #- Use every_second instead of every_100ms — 8 channels × 1ms delay = 8ms per scan -#
+  def every_100ms()
+    #- Use every_100ms — if using 8 channels × 1ms delay = 8ms per scan -#
     self.read_all()
   end
 
