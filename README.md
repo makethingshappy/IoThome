@@ -63,7 +63,7 @@ A typical IoThome node follows this flow from hardware to running automation:
                          │
 ┌────────────────────────▼────────────────────────────────────────┐
 │  2. FLASH                                                       │
-│     Flash pre-built Tasmota binary from /Tasmota_Binaries       │
+│     Flash Tasmota binary from official Tasmota website          │
 └────────────────────────┬────────────────────────────────────────┘
                          │
 ┌────────────────────────▼────────────────────────────────────────┐
@@ -112,7 +112,6 @@ IoThome/
 │
 ├── Media/                   # Images and Video links
 │
-├── Tasmota_Binaries/        # Pre-built Tasmota firmware for supported boards
 │
 ├── Tasmota_Templates/       # GPIO templates for IoTextra module variants
 │
