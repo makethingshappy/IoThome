@@ -63,7 +63,7 @@ A typical IoThome node follows this flow from hardware to running automation:
                          │
 ┌────────────────────────▼────────────────────────────────────────┐
 │  2. FLASH                                                       │
-│     Flash Tasmota binary from official Tasmota website          │
+│     Flash Tasmota binary from official Tasmota releases         │
 └────────────────────────┬────────────────────────────────────────┘
                          │
 ┌────────────────────────▼────────────────────────────────────────┐
