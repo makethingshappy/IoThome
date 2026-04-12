@@ -49,7 +49,7 @@ This guide walks you through setting up an IoThome node from scratch, from flash
 
 ## 2. Flash Tasmota
 
-Tasmota is flashed using the browser-based web installer — no drivers or command-line tools required.
+Tasmota is flashed using the browser-based web installer — no drivers or command-line tools required, but can also be used optionally.
 
 **1.** Plug your ESP32 into your computer via USB.
 
@@ -57,7 +57,7 @@ Tasmota is flashed using the browser-based web installer — no drivers or comma
 
 > ⚠️ Firefox and Safari does not support the Web Serial API. Use Chrome or Edge.
 
-**3.** Click **Connect** and select your ESP32's COM port from the popup list.
+**3.** Click **Connect** and select your ESP32's COM port from the popup list. (See Below Example)
 
 <p align="center">
   
@@ -71,12 +71,7 @@ Tasmota is flashed using the browser-based web installer — no drivers or comma
 
 </p>
 
-**4.** Once connected, click **Install**, but do **not** use the default firmware listed on the page. Instead, use the custom binary from this repo:
-
-- Scroll down and look for a **"Select file"** or **"Custom firmware"** option
-- Select the `.bin` file you downloaded from `/Tasmota_Binaries`
-
-> ⚠️ Always use the Tasmota firmware appropriate to your ESP32 device, for stability reasons, it is recommended to upload the custom binary from this repo.
+**4.** You can choose from a list of Tasmota binaries in the official Tasmota github repository that best matches your SoM or device, Once chosen and connected, click **Install**.
 
 **5.** Check **Erase device** if this is a fresh install or the board has been previously flashed with different firmware.
 
