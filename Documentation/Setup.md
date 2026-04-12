@@ -42,7 +42,7 @@ This guide walks you through setting up an IoThome node from scratch, from flash
 | Berry driver(s) for your hardware | [`/Berry_Drivers`](./Berry_Drivers) in this repo |
 | A modern web browser (Chrome or Edge recommended) | — |
 
-> **Which binary?** Check Tasmota's Official Github Repository or Website for more details [https://tasmota.github.io/docs/Getting-Started/](https://tasmota.github.io/docs/Getting-Started/) — it will indicate the target board. If you are unsure, open an issue in this repository.
+> **Which Tasmota binary should i use ?** Check Tasmota's Official Github Repository or Website for more details [https://tasmota.github.io/docs/Getting-Started/](https://tasmota.github.io/docs/Getting-Started/) — it will indicate the target board. If you are unsure, open an issue in this repository.
 
 ---
 
