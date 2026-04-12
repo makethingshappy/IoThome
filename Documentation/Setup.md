@@ -38,12 +38,11 @@ This guide walks you through setting up an IoThome node from scratch, from flash
 
 | File | Where to get it |
 |---|---|
-| Tasmota binary for your board | [`/Tasmota_Binaries`](./Tasmota_Binaries) in this repo |
 | GPIO template for your IoTextra module | [`/Tasmota_Templates`](./Tasmota_Templates) in this repo |
 | Berry driver(s) for your hardware | [`/Berry_Drivers`](./Berry_Drivers) in this repo |
 | A modern web browser (Chrome or Edge recommended) | — |
 
-> **Which binary?** Check the filename in `/Tasmota_Binaries` — it will indicate the target board. If you are unsure, open an issue in this repository.
+> **Which binary?** Check Tasmota's Official Github Repository or Website for more details [https://tasmota.github.io/docs/Getting-Started/](https://tasmota.github.io/docs/Getting-Started/) — it will indicate the target board. If you are unsure, open an issue in this repository.
 
 ---
 
