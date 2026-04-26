@@ -1,4 +1,4 @@
-Tasmota templates for IoTextra mezzanine modules used with the **IoTbase PICO** platform.
+**IoTbase PICO** platform.
 
 ## Available Templates
 
