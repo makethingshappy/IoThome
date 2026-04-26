@@ -1,4 +1,6 @@
-*IoTbase PICO* platform.
+# Tasmota Templates — IoTbase PICO
+
+Tasmota templates for IoTextra mezzanine modules used with the **IoTbase PICO** platform.
 
 ## Available Templates
 
