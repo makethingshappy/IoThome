@@ -1,59 +1,28 @@
-# 🔗 Tasmota Templates
+# Tasmota Templates
 
-## IoTbase Nano
+Tasmota configuration templates for IoTextra mezzanine modules across all IoTsmart & IoTbase platforms.
 
-IoTextra Input:
+## Template Coverage Matrix
 
-```
-{"NAME":"IoTextra Input","GPIO":[1,1,166,165,164,167,1,1,1,160,161,640,608,1,1,1,1,162,163,1,1,1,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1],"FLAG":0,"BASE":1}
-```
+| IoTextra Module     | IoTsmart ESP32-S3 | IoTbase PICO | IoTbase Nano | IoTbase Feather |
+|---------------------|:-----------------:|:------------:|:------------:|:---------------:|
+| Octal               | ✅ Available      | 🔜 Coming Soon | ✅ Available | 🔜 Coming Soon |
+| Octal2              | ✅ Available      | 🔜 Coming Soon | ✅ Available | ✅ Available   |
+| Relay2              | 🔜 Coming Soon   | 🔜 Coming Soon | ✅ Available | 🔜 Coming Soon |
+| Input               | 🔜 Coming Soon   | 🔜 Coming Soon | ✅ Available | 🔜 Coming Soon |
+| SSR Small           | 🔜 Coming Soon   | 🔜 Coming Soon | ✅ Available | 🔜 Coming Soon |
+| Analog / V2 / V3    | 🔜 Coming Soon   | 🔜 Coming Soon | ✅ Available | ✅ Available   |
+| Combo               | 🔜 Coming Soon   | 🔜 Coming Soon | ✅ Available | ✅ Available   |
 
-IoTextra Relay2:
+## Platforms
 
-```
-{"NAME":"IoTextra Relay2","GPIO":[1,1,1,1,1,1,1,1,1,256,257,640,608,1,1,1,1,258,259,1,1,1,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1],"FLAG":0,"BASE":1}
-```
+| Folder | Platform |
+|--------|----------|
+| [IoTsmart_ESP32-S3](./IoTsmart_ESP32-S3/) | IoTsmart ESP32-S3 |
+| [IoTbase_PICO](./IoTbase_PICO/) | IoTbase PICO |
+| [IoTbase_Nano](./IoTbase_Nano/) | IoTbase Nano |
+| [IoTbase_Feather](./IoTbase_Feather/) | IoTbase Feather |
 
-IoTextra SSR Small:
+## How to Apply a Template
 
-```
-{"NAME":"IoTextra SSR Small","GPIO":[1,1,262,261,260,263,1,1,1,256,257,640,608,1,1,1,1,258,259,1,1,1,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1],"FLAG":0,"BASE":1}
-```
-
-IoTextra Octal2:
-
-```
-{"NAME":"IoTextra Octal2","GPIO":[1,1,258,257,256,259,1,1,1,160,161,640,608,1,1,1,1,162,163,1,1,1,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1],"FLAG":0,"BASE":1}
-```
-
-IoTextra Analog / Analog V2 / Analog V3:
-
-```
-{"NAME":"IoTextra Analog","GPIO":[1,1,1,1,1,1,1,1,1,1,1,640,608,1,1,1,1,1,1,1,1,1,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1],"FLAG":0,"BASE":1}
-```
-
-IoTextra Combo:
-
-```
-{"NAME":"IoTextra Combo","GPIO":[1,1,1,1,1,1,1,1,1,256,257,640,608,1,1,1,1,1,1,1,1,1,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1],"FLAG":0,"BASE":1}
-```
-
-## IoTbase Feather
-
-IoTextra Octal2:
-
-```
-{"NAME":"IoTextra Octal2","GPIO":[1,1,1,257,1,256,258,162,161,1,1,1,1,1,160,1,1,1,608,640,1,1,1,1,0,0,0,0,0,0,0],"FLAG":0,"BASE":1}
-```
-
-IoTextra Analog / Analog V2 / Analog V3:
-
-```
-{"NAME":"IoTextra Analog","GPIO":[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,608,640,1,1,1,1,0,0,0,0,0,0,0],"FLAG":0,"BASE”:1}
-```
-
-IoTextra Combo:
-
-```
- {"NAME":"IoTextra Combo","GPIO":[1,1,1,1,1,1,1,1,257,1,1,1,1,1,256,1,1,1,608,640,1,1,1,1,0,0,0,0,0,0,0],"FLAG":0,"BASE":1}
-```
+See the [IoThome Setup Guide](https://github.com/makethingshappy/IoThome/blob/main/Documentation/Setup.md) for instructions.
