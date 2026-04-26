@@ -9,7 +9,7 @@ Tasmota configuration templates for IoTextra mezzanine modules across all IoTsma
 | Input            | ✅ Available    | 🔶 Coming Soon | ✅ Available | 🔶 Coming Soon |
 | Relay2           | ✅ Available    | 🔶 Coming Soon | ✅ Available | 🔶 Coming Soon |
 | SSR Small        | ✅ Available    | 🔶 Coming Soon | ✅ Available | 🔶 Coming Soon |
-| MOSFET2          | 🔶 Coming Soon  | 🔶 Coming Soon | 🔶 Coming Soon | 🔶 Coming Soon |
+| MOSFET2          | ✅ Available    | 🔶 Coming Soon | 🔶 Coming Soon | 🔶 Coming Soon |
 | Octal            | ✅ Available    | 🔶 Coming Soon | ✅ Available | 🔶 Coming Soon |
 | Octal2           | ✅ Available    | 🔶 Coming Soon | ✅ Available | ✅ Available   |
 | Analog           | 🔶 Coming Soon  | 🔶 Coming Soon | ✅ Available | ✅ Available   |
