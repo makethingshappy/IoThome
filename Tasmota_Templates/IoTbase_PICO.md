@@ -1,4 +1,4 @@
-**IoTbase PICO** platform.
+*IoTbase PICO* platform.
 
 ## Available Templates
 
