@@ -15,8 +15,10 @@ Tasmota GPIO Templates for IoTextra mezzanine modules across all IoTsmart & IoTb
 | Relay2 | ✅ Available | 🔲 Coming Soon | 🔲 Coming Soon | ✅ Available | 🔲 Coming Soon |
 | SSR Small | ✅ Available | 🔲 Coming Soon | 🔲 Coming Soon | ✅ Available | 🔲 Coming Soon |
 | MOSFET2 | ✅ Available | 🔲 Coming Soon | 🔲 Coming Soon | 🔲 Coming Soon | 🔲 Coming Soon |
+| Quadro | 🗓 Planned | 🗓 Planned | 🗓 Planned | 🗓 Planned | 🗓 Planned |
 | Octal | ✅ Available | 🔲 Coming Soon | 🔲 Coming Soon | ✅ Available | ✅ Available |
 | Octal2 | ✅ Available | 🔲 Coming Soon | 🔲 Coming Soon | ✅ Available | ✅ Available |
+| Octal3 | 🗓 Planned | 🗓 Planned | 🗓 Planned | 🗓 Planned | 🗓 Planned |
 | Analog | 🔲 Coming Soon | 🔲 Coming Soon | 🔲 Coming Soon | ✅ Available | ✅ Available |
 | Analog2 | 🗓 Planned | 🗓 Planned | 🗓 Planned | 🗓 Planned | 🗓 Planned |
 | Analog3 | 🔲 Coming Soon | 🔲 Coming Soon | 🔲 Coming Soon | 🔲 Coming Soon | 🔲 Coming Soon |
@@ -50,3 +52,4 @@ Tasmota GPIO Templates for IoTextra mezzanine modules across all IoTsmart & IoTb
 ## How to Apply a Template
 
 See the [IoThome Setup Guide](../Documentation/Setup.md) for instructions.
+
