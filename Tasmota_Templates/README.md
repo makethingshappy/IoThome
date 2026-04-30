@@ -4,19 +4,8 @@ Tasmota configuration templates for IoTextra mezzanine modules across all IoTsma
 
 ## Template Coverage Matrix
 
-| IoTextra Module  | IoTsmart ESP32-S3 | IoTbase PICO | IoTbase Nano | IoTbase Feather |
-|------------------|-----------------|--------------|--------------|-----------------|
-| Input            | ✅ Available    | 🔶 Coming Soon | ✅ Available | 🔶 Coming Soon |
-| Relay2           | ✅ Available    | 🔶 Coming Soon | ✅ Available | 🔶 Coming Soon |
-| SSR Small        | ✅ Available    | 🔶 Coming Soon | ✅ Available | 🔶 Coming Soon |
-| MOSFET2          | ✅ Available    | 🔶 Coming Soon | 🔶 Coming Soon | 🔶 Coming Soon |
-| Octal            | ✅ Available    | 🔶 Coming Soon | ✅ Available | ✅ Available   |
-| Octal2           | ✅ Available    | 🔶 Coming Soon | ✅ Available | ✅ Available   |
-| Analog           | 🔶 Coming Soon  | 🔶 Coming Soon | ✅ Available | ✅ Available   |
-| Analog2          | 🔲 Planned      | 🔲 Planned    | 🔲 Planned   | 🔲 Planned     |
-| Analog3          | 🔶 Coming Soon  | 🔶 Coming Soon | 🔶 Coming Soon | 🔶 Coming Soon |
-| Combo            | 🔶 Coming Soon  | 🔶 Coming Soon | ✅ Available | ✅ Available   |
-| Combo2           | 🔲 Planned      | 🔲 Planned    | 🔲 Planned   | 🔲 Planned   
+<!-- TEMPLATE_COVERAGE_START -->
+<!-- TEMPLATE_COVERAGE_END -->
 
 ## Legend
 
