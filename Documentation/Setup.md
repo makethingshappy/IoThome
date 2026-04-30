@@ -38,11 +38,10 @@ This guide walks you through setting up an IoThome node from scratch, from flash
 
 | File | Where to get it |
 |---|---|
-| GPIO template for your IoTextra module | [`/Tasmota_Templates`](./Tasmota_Templates) in this repo |
-| Berry driver(s) for your hardware | [`/Berry_Drivers`](./Berry_Drivers) in this repo |
+| Tasmota factory binary for your SoM | See SoM → binary table in [Flash Tasmota](#2-flash-tasmota) below |
+| GPIO template for your IoTextra module | [`/Tasmota_Templates`](../Tasmota_Templates) in this repo |
+| Berry driver(s) for your hardware | [`/Berry_Drivers`](../Berry_Drivers) in this repo |
 | A modern web browser (Chrome or Edge recommended) | — |
-
-> **Which Tasmota binary should i use ?** Check Tasmota's Official Github Repository or Website for more details [https://tasmota.github.io/docs/Getting-Started/](https://tasmota.github.io/docs/Getting-Started/) — it will indicate the target board. If you are unsure, open an issue in this repository.
 
 ---
 
@@ -50,11 +49,60 @@ This guide walks you through setting up an IoThome node from scratch, from flash
 
 Tasmota is flashed using the browser-based web installer — no drivers or command-line tools required, but can also be used optionally.
 
+### SoM → Factory Binary Table
+
+Find your SoM in the table below and download the corresponding factory binary from the [official Tasmota releases](https://github.com/arendst/Tasmota/releases).
+
+> ⚠️ Always verify file names against the latest release before flashing — names may change between versions.
+
+#### ESP32-S3
+
+| SoM | Factory binary |
+|---|---|
+| Adafruit Feather ESP32-S3 4MB + 2MB PSRAM, SparkFun Thing Plus ESP32-S3 | `tasmota32s3-4MB-2MB-psram-factory.bin` |
+| Waveshare ESP32-S3-Tiny, XIAO ESP32-S3, XIAO ESP32-S3 Sense, Adafruit QT Py ESP32-S3, Adafruit Feather ESP32-S3 8MB, Arduino Nano ESP32 | `tasmota32s3-8MB-factory.bin` |
+| Waveshare ESP32-S3-Pico | `tasmota32s3-16MB-2MB-psram-factory.bin` |
+| Waveshare ESP32-S3-Nano, FeatherS3 by Unexpected Maker | `tasmota32s3-16MB-8MB-psram-factory.bin` |
+
+#### ESP32-C6
+
+| SoM | Factory binary |
+|---|---|
+| XIAO ESP32-C6, Adafruit Feather ESP32-C6, Waveshare ESP32-C6 Pico | `tasmota32c6-4MB-factory.bin` |
+| SparkFun Thing Plus ESP32-C6 | `tasmota32c6-16MB-factory.bin` |
+
+#### ESP32-C3
+
+| SoM | Factory binary |
+|---|---|
+| XIAO ESP32-C3 | `tasmota32c3-4MB-factory.bin` |
+
+#### ESP32-C5
+
+| SoM | Factory binary |
+|---|---|
+| XIAO ESP32-C5 | `tasmota32c5-4MB-factory.bin` |
+
+---
+
+### When Do You Need to Re-flash with a Factory Binary?
+
+Re-flash with a factory binary (not OTA) in these cases:
+
+- **Switching SoM** — different SoM may require a different binary or partition scheme
+- **Corrupted firmware** — device does not boot or is unresponsive
+- **Returning from ESPHome or Arduino** — these use different partition schemes incompatible with Tasmota OTA
+- **Changing partition scheme** — required when switching between flash size variants
+
+---
+
+### Flashing Steps
+
 **1.** Plug your ESP32 into your computer via USB.
 
-**2.** Open [https://tasmota.github.io/install/](https://tasmota.github.io/install/) or [https://tasmota.github.io/docs/Getting-Started/](https://tasmota.github.io/docs/Getting-Started/) in Chrome or Edge.
+**2.** Open [https://tasmota.github.io/install/](https://tasmota.github.io/install/) in Chrome or Edge.
 
-> ⚠️ Firefox and Safari does not support the Web Serial API. Use Chrome or Edge.
+> ⚠️ Firefox and Safari do not support the Web Serial API. Use Chrome or Edge.
 
 **3.** Click **Connect** and select your ESP32's COM port from the popup list. (See Below Example)
 
@@ -70,7 +118,7 @@ Tasmota is flashed using the browser-based web installer — no drivers or comma
 
 </p>
 
-**4.** You can choose from a list of Tasmota binaries in the official Tasmota github repository that best matches your SoM or device, Once chosen and connected, click **Install**.
+**4.** Find your SoM in the table above, download the corresponding factory binary from [Tasmota releases](https://github.com/arendst/Tasmota/releases), and select it in the installer.
 
 **5.** Check **Erase device** if this is a fresh install or the board has been previously flashed with different firmware.
 
@@ -106,7 +154,7 @@ Tasmota needs to know which GPIO pins are connected to what. IoThome provides pr
 
 **1.** Open the Tasmota web UI and go to **Configuration → Configure Other**.
 
-**2.** Open the template JSON file for your module from [`/Tasmota_Templates`](./Tasmota_Templates) in a text editor and copy the entire contents.
+**2.** Open the template JSON file for your module from [`/Tasmota_Templates`](../Tasmota_Templates) in a text editor and copy the entire contents.
 
 **3.** Paste it into the **Template** field in the Tasmota UI.
 
@@ -115,6 +163,17 @@ Tasmota needs to know which GPIO pins are connected to what. IoThome provides pr
 **5.** Click **Save**. Tasmota will restart and apply the new GPIO assignments.
 
 > 📖 If your exact module is not listed in `/Tasmota_Templates`, check the schematic for your IoTextra board to identify the GPIO pin assignments and create a template manually using the [Tasmota Template documentation](https://tasmota.github.io/docs/Templates/).
+
+### Template Coverage
+
+<!-- TEMPLATE_COVERAGE_START -->
+<!-- TEMPLATE_COVERAGE_END -->
+
+| Status | Meaning |
+|:---:|---|
+| ✅ Available | Template ready and tested on real hardware |
+| 🔲 Coming Soon | In progress |
+| 🗓 Planned | On the roadmap |
 
 ---
 
@@ -141,7 +200,7 @@ I2C device found at address 0x27
 
 If you see your module's expected address(es) listed here, I²C is working correctly. If nothing appears, check your wiring and confirm SDA/SCL pin assignments.
 
-> 📖 See [`/Documentation/Berry Drivers.md`](./Documentation/) for the I²C address reference tables for ADS1115 and TCA9534/TCA9534A.
+> 📖 See [`/Documentation/Berry Drivers.md`](./Berry%20Drivers.md) for the I²C address reference tables for ADS1115 and TCA9534/TCA9534A.
 
 ### ⚠️ Disable Conflicting Tasmota I²C Drivers
 
@@ -167,7 +226,7 @@ Berry drivers are `.be` files that run directly on the ESP32 inside Tasmota. Upl
 
 **1.** In the Tasmota web UI go to **Consoles → Manage File System**.
 
-**2.** Click **Choose File** and select the relevant `.be` file(s) from [`/Berry_Drivers`](./Berry_Drivers):
+**2.** Click **Choose File** and select the relevant `.be` file(s) from [`/Berry_Drivers`](../Berry_Drivers):
 
 | Module | Driver file |
 |---|---|
@@ -201,8 +260,8 @@ var CHANNEL_RANGES = [0x02, 0x22, 0x82, 0x03]  # One range code per channel
 | What to check | Where to find the answer |
 |---|---|
 | Shunt resistor value | Printed on or in the schematic for your IoTextra analog board |
-| Hardware gain | See the gain table in [`/Documentation/Berry Drivers.md`](./Documentation/) |
-| Channel range codes | See the range code table in [`/Documentation/Berry Drivers.md`](./Documentation/) |
+| Hardware gain | See the gain table in [`/Documentation/Berry Drivers.md`](./Berry%20Drivers.md) |
+| Channel range codes | See the range code table in [`/Documentation/Berry Drivers.md`](./Berry%20Drivers.md) |
 
 **Configure ADS1115 boot behaviour in Tasmota:**
 
@@ -255,7 +314,7 @@ var HARDWARE_MODE        = "i2c"       # "i2c" or "gpio"
 
 | What to check | Where to find the answer |
 |---|---|
-| I²C address | Check A0/A1/A2 pin wiring on your board against the address table in [`/Documentation/Berry Drivers.md`](./Documentation/) |
+| I²C address | Check A0/A1/A2 pin wiring on your board against the address table in [`/Documentation/Berry Drivers.md`](./Berry%20Drivers.md) |
 | Pin config string | Check the schematic for your IoTextra module — common presets are listed in the driver documentation |
 | Hardware mode | Use `"i2c"` unless your channels are directly wired to ESP32 GPIO pins |
 
@@ -348,8 +407,8 @@ Your IoThome node is now running. Here is what to explore next:
 
 | Goal | Where to look |
 |---|---|
-| Understand all driver configuration options | [`/Documentation/Berry Drivers.md`](./Documentation/) |
-| Add automation logic with a ready made `autoexec.be` application script (e.g. control relays based on sensor readings) | [`/Application_Scripts`](./Application_Scripts) |
+| Understand all driver configuration options | [`/Documentation/Berry Drivers.md`](./Berry%20Drivers.md) |
+| Add automation logic with a ready made `autoexec.be` application script (e.g. control relays based on sensor readings) | [`/Application_Scripts`](../Application_Scripts) |
 | Connect to Home Assistant or Node-RED | Configure MQTT under **Configuration → Configure MQTT** in Tasmota |
 | Add more IoTextra modules | Repeat steps 4–8 for each additional module |
-| Troubleshoot I²C detection issues | Re-run `I2CScan` in the console and verify wiring against the address tables in [`/Documentation`](./Documentation/) |
+| Troubleshoot I²C detection issues | Re-run `I2CScan` in the console and verify wiring against the address tables in [`/Documentation`](.) |
