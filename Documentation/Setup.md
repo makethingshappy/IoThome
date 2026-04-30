@@ -64,13 +64,6 @@ Find your SoM in the table below and download the corresponding factory binary f
 | Waveshare ESP32-S3-Pico | `tasmota32s3-16MB-2MB-psram-factory.bin` |
 | Waveshare ESP32-S3-Nano, FeatherS3 by Unexpected Maker | `tasmota32s3-16MB-8MB-psram-factory.bin` |
 
-#### ESP32-C6
-
-| SoM | Factory binary |
-|---|---|
-| XIAO ESP32-C6, Adafruit Feather ESP32-C6, Waveshare ESP32-C6 Pico | `tasmota32c6-4MB-factory.bin` |
-| SparkFun Thing Plus ESP32-C6 | `tasmota32c6-16MB-factory.bin` |
-
 #### ESP32-C3
 
 | SoM | Factory binary |
@@ -82,6 +75,13 @@ Find your SoM in the table below and download the corresponding factory binary f
 | SoM | Factory binary |
 |---|---|
 | XIAO ESP32-C5 | `tasmota32c5-4MB-factory.bin` |
+
+#### ESP32-C6
+
+| SoM | Factory binary |
+|---|---|
+| XIAO ESP32-C6, Adafruit Feather ESP32-C6, Waveshare ESP32-C6 Pico | `tasmota32c6-4MB-factory.bin` |
+| SparkFun Thing Plus ESP32-C6 | `tasmota32c6-16MB-factory.bin` |
 
 ---
 
