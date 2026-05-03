@@ -66,13 +66,6 @@ class ADS7828 : Driver
   var vref
   var readings
 
-  #- Command byte constants
-   - SD=1 (single-ended) = 0x80
-   - PD1=1 PD0=1 (internal ref ON, ADC ON) = 0x0C
-   - Channel bits from Table II of ADS7828 datasheet (bits 6-4)
-  -#
-  static CMD_BASE = 0x8C  #- SD=1, PD1=1, PD0=1, CH0 -#
-
   static CHANNEL_BITS = [
     0x00,  #- CH0: C2=0 C1=0 C0=0 -#
     0x40,  #- CH1: C2=1 C1=0 C0=0 -#
@@ -84,9 +77,16 @@ class ADS7828 : Driver
     0x70   #- CH7: C2=1 C1=1 C0=1 -#
   ]
 
+  #- Command byte constants
+   - SD=1 (single-ended) = 0x80
+   - PD1=1 PD0=1 (internal ref ON, ADC ON) = 0x0C
+   - Channel bits from Table II of ADS7828 datasheet (bits 6-4)
+  -#
+
+  #- SD=1, PD1=1, PD0=1, CH0 -#
   static SD_BIT  = 0x80
   static PD_BITS = 0x0C
-  static GAIN = 0.4752 #- front-end differential amp attenuation: R48/R52 -#
+  static GAIN = 0.4752 #- front-end differential op amp attenuation: R48/R52 -#
 
   def init(i2c_addr, vref)
     self.i2c_addr = i2c_addr
