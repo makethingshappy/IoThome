@@ -86,7 +86,9 @@ class ADS7828 : Driver
   #- SD=1, PD1=1, PD0=1, CH0 -#
   static SD_BIT  = 0x80
   static PD_BITS = 0x0C
-  static GAIN = 0.4752 #- front-end differential op amp attenuation: R48/R52 -#
+
+  #- G = 0.4752 front-end differential op amp attenuation: R48/R52 -#
+  static GAIN = 0.47523809523809524
 
   def init(i2c_addr, vref)
     self.i2c_addr = i2c_addr
