@@ -87,7 +87,7 @@ class ADS7828Data : Driver
   static SD_BIT  = 0x80
   static PD_BITS = 0x0C
 
-  #- Same range system as ADS1115 -#
+  #- Measurement Range -#
   static RANGE_CONFIGS = {
     0x01: {'type': 'voltage', 'min': 0.0, 'max': 0.5, 'bipolar': false},
     0x02: {'type': 'voltage', 'min': 0.0, 'max': 5.0, 'bipolar': false},
