@@ -143,7 +143,7 @@ ADS1115 D1 mA  12.450 mA
 
 ## ADS7828 Analog Driver (IoTextra Analog 3)
 
-The documentation below reflects the `ADS7828.be` driver’s current interface.
+Driver for **IoTextra Analog 3** based on the `ADS7828` 8-channel I²C ADC.
 
 ### What It Does
 

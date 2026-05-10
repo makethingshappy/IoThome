@@ -1,8 +1,3 @@
-#- ===========================================================================
-- ⚠️ WORK IN PROGRESS
-- This driver is intended for IoTextra Analog V3 and is not yet ready for use.
-- ============================================================================ -#
-
 #-
 MIT License
 

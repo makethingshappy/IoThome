@@ -253,6 +253,7 @@ Berry drivers are `.be` files that run directly on the ESP32 inside Tasmota. Upl
 | Module | Driver file |
 |---|---|
 | IoTextra Analog Input (ADS1115) | `ADS1115Data.be` |
+| IoTextra Analog 3 (ADS7828) | `ADS7828.be` |
 | IoTextra Relay / Digital I/O (TCA9534 or TCA9534A) | `TCA9534.be` |
 
 **3.** Click **Upload** for each file. You will see it appear in the file list once uploaded successfully.
@@ -326,6 +327,25 @@ Sensor12 S2    # Single-ended mode, 2.048V range
 Sensor12 D1    # Differential mode, 4.096V range
 ```
 
+### ADS7828 (`ADS7828.be`)
+
+```berry
+var ADS7828_ADDRESS = 0x4B  # Valid: 0x48–0x4B (A1/A0 strapping)
+var ADS7828_VREF    = 2.5   # Internal reference (default)
+
+var SHUNT_RESISTOR = 0.249
+var HARDWARE_GAIN  = 0.47523809523809524
+
+# One range code per channel (CH0–CH7)
+var CHANNEL_RANGES = [0x02, 0x22, 0x82, 0x03, 0x02, 0x02, 0x02, 0x02]
+```
+
+| What to check | Where to find the answer |
+|---|---|
+| I²C address (`ADS7828_ADDRESS`) | Check A0/A1 strapping vs the address table in [`/Documentation/I2C Address & GPIO Mapping Reference.md`](./I2C%20Address%20%26%20GPIO%20Mapping%20Reference.md) |
+| Hardware gain / shunt resistor | Check the schematic / BOM for your IoTextra Analog 3 board |
+| Channel range codes | See the range code tables in [`/Documentation/Berry Drivers.md`](./Berry%20Drivers.md) |
+
 ### TCA9534 (`TCA9534.be`)
 
 ```berry
@@ -358,6 +378,7 @@ Tasmota runs `autoexec.be` automatically on every boot. You need to create this 
 ```berry
 # Load only the drivers that match your hardware
 load('ADS1115Data.be')
+load('ADS7828.be')
 load('TCA9534.be')
 ```
 
