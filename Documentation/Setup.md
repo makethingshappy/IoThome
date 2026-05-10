@@ -100,7 +100,7 @@ Re-flash with a factory binary (not OTA) in these cases:
 
 **1.** Plug your ESP32 into your computer via USB.
 
-**2.** Open [https://tasmota.github.io/install/](https://tasmota.github.io/install/) in Chrome or Edge.
+**2.** Open [https://tasmota.github.io/docs/Getting-Started/](https://tasmota.github.io/docs/Getting-Started/) or [https://tasmota.github.io/install/](https://tasmota.github.io/install/) in Chrome or Edge.
 
 > ⚠️ Firefox and Safari do not support the Web Serial API. Use Chrome or Edge.
 
