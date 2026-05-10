@@ -116,13 +116,13 @@ Full template files: [`/Tasmota_Templates`](Tasmota_Templates/)
 ```
 ┌─────────────────────────────────────────────────────────────────┐
 │  1. HARDWARE                                                    │
-│     Carrier board + SoM + IoTextra I/O module(s)               │
+│     Carrier board + SoM + IoTextra I/O module(s)                │
 └────────────────────────┬────────────────────────────────────────┘
                          │
 ┌────────────────────────▼────────────────────────────────────────┐
 │  2. FLASH                                                       │
 │     Flash Tasmota factory binary from official Tasmota releases │
-│     Binary is selected by SoM — see SoM table in Setup.md      │
+│     Binary is selected by SoM — see SoM table in Setup.md       │
 └────────────────────────┬────────────────────────────────────────┘
                          │
 ┌────────────────────────▼────────────────────────────────────────┐
@@ -139,7 +139,7 @@ Full template files: [`/Tasmota_Templates`](Tasmota_Templates/)
 ┌────────────────────────▼────────────────────────────────────────┐
 │  5. AUTOMATE                                                    │
 │     Upload application scripts from /Application_Scripts        │
-│     Add berry driver load() calls to autoexec.be               │
+│     Add berry driver load() calls to autoexec.be                │
 │     Node runs autonomously — no external server required        │
 └─────────────────────────────────────────────────────────────────┘
 ```
