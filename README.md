@@ -71,6 +71,7 @@ No external server, hub, or cloud dependency is required. Every node runs autono
 
 **Analog / Combo**
 - IoTextra Analog
+- IoTextra Analog 3
 - IoTextra Combo
 
 ### Template Coverage
