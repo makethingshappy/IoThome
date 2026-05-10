@@ -15,8 +15,13 @@ Berry drivers for the ADS1115 analog ADC and TCA9534/TCA9534A digital I/O expand
   - [Channel Range Codes](#channel-range-codes)
   - [Hardware Gain](#hardware-gain)
   - [Output Format](#ads1115-output-format)
-- [TCA9534 Digital I/O Driver](#tca9534-digital-io-driver)
+- [ADS7828 Analog Driver (IoTextra Analog 3)](#ads7828-analog-driver-iotextra-analog-3)
   - [What It Does](#what-it-does-1)
+  - [Configuration](#ads7828-configuration)
+  - [Channel Range Codes](#channel-range-codes-1)
+  - [Output Format](#ads7828-output-format)
+- [TCA9534 Digital I/O Driver](#tca9534-digital-io-driver)
+  - [What It Does](#what-it-does-2)
   - [Configuration](#tca9534-configuration)
   - [Pin Configuration String](#pin-configuration-string)
   - [Hardware Mode](#hardware-mode)
@@ -133,6 +138,93 @@ ADS1115 D1 mA  12.450 mA
   "D3_V":  9.100
 }
 ```
+
+---
+
+## ADS7828 Analog Driver (IoTextra Analog 3)
+
+The documentation below reflects the `ADS7828.be` driver’s current interface.
+
+### What It Does
+
+Reads **8 single-ended** analog channels (CH0–CH7) from an **ADS7828 12-bit ADC** over I²C and exposes them to Tasmota’s web UI and telemetry JSON.
+
+- Uses the ADS7828 **internal 2.5 V reference** by default (`ADS7828_VREF = 2.5`)
+- Publishes per-channel values as either **volts (V)** or **milliamps (mA)** depending on `CHANNEL_RANGES`
+
+> **I²C address:** `0x48`–`0x4B` depending on A0/A1 strapping. The driver defaults to `0x4B` (see `ADS7828_ADDRESS`).
+
+---
+
+### ADS7828 Configuration
+
+At the top of `ADS7828.be`, these variables control all user-facing behaviour:
+
+```berry
+var ADS7828_ADDRESS = 0x4B
+var ADS7828_VREF    = 2.5
+
+var SHUNT_RESISTOR = 0.249
+var HARDWARE_GAIN  = 0.47523809523809524
+
+var CHANNEL_RANGES = [0x02, 0x22, 0x82, 0x03, 0x02, 0x02, 0x02, 0x02]
+```
+
+| Variable | What It Controls | Notes |
+|---|---|---|
+| `ADS7828_ADDRESS` | I²C address of the ADS7828 | Valid: `0x48`, `0x49`, `0x4A`, `0x4B` |
+| `ADS7828_VREF` | Reference voltage used for conversion | Driver assumes internal reference (default `2.5`) |
+| `SHUNT_RESISTOR` | Shunt resistor (Ω) for current measurements | Used when a channel is configured as `current` |
+| `HARDWARE_GAIN` | Analog front-end gain/attenuation factor | Board-specific scaling applied to all channels |
+| `CHANNEL_RANGES` | Range code per channel (8 entries for CH0–CH7) | Controls whether each channel is V or mA, and clamp range |
+
+---
+
+### Channel Range Codes
+
+`CHANNEL_RANGES` uses the same range code scheme as the ADS1115 driver, but applied per **single-ended** channel (CH0–CH7):
+
+#### Voltage Ranges
+
+| Code | Range | Notes |
+|:----:|-------|-------|
+| `0x01` | 0 – 0.5 V | Unipolar, low range |
+| `0x02` | 0 – 5 V | Unipolar *(common for 0–5 V sensors)* |
+| `0x03` | 0 – 10 V | Unipolar *(common for 0–10 V sensors)* |
+| `0x81` | ±0.5 V | Bipolar |
+| `0x82` | ±5 V | Bipolar |
+| `0x83` | ±10 V | Bipolar |
+
+#### Current Ranges
+
+| Code | Range | Notes |
+|:----:|-------|-------|
+| `0x21` | 0 – 20 mA | Unipolar current |
+| `0x22` | 4 – 20 mA | *(most common)* |
+| `0x23` | 0 – 40 mA | Extended range |
+| `0xA1` | ±20 mA | Bipolar current |
+
+---
+
+### ADS7828 Output Format
+
+**Web UI:**
+```
+ADS7828 CH0 V    3.214 V
+ADS7828 CH1 mA  12.450 mA
+```
+
+**Telemetry JSON (`tele/tasmota/SENSOR`):**
+```json
+"ADS7828": {
+  "CH0_V":  3.214,
+  "CH1_mA": 12.450,
+  "CH2_V": -1.832,
+  "CH3_V":  9.100
+}
+```
+
+> The driver only emits keys for channels whose range codes are valid (i.e. present in its `RANGE_CONFIGS` table).
 
 ---
 

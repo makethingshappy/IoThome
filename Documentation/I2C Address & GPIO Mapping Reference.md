@@ -16,6 +16,33 @@ The ADS1115 ADDR pin selects one of four addresses:
 
 > NOTE: The `ADS1115Data.be` driver dynamically identifies ADS1115 ADC's from list of known addresses above, so you don't need to manually set the I2C addresses
 
+Make sure the following I2C driver is enabled in tasmota when using `ADS1115` by inputting the following command in Tasmota CMD console:
+
+```
+I2cDriver13 1
+```
+
+---
+
+## ADS7828 — I²C Address Table (IoTextra Analog 3)
+
+The ADS7828 uses A1/A0 address pins to select one of four addresses:
+
+| A1 | A0 | I²C Address (7-bit) | Hex  |
+|:--:|:--:|---------------------|------|
+| L  | L  | 1001000             | 0x48 |
+| L  | H  | 1001001             | 0x49 |
+| H  | L  | 1001010             | 0x4A |
+| H  | H  | 1001011             | 0x4B |
+
+> **Note:** In this repo, the `ADS7828.be` Berry driver defaults to `ADS7828_ADDRESS = 0x4B`. If your IoTextra Analog 3 is strapped differently, change the address in the driver (or adjust A0/A1 jumpers on the board).
+
+Make sure to disable the following I2C driver in tasmota when using `ADS7828` by inputting the following command in Tasmota CMD console:
+
+```
+I2cDriver13 0
+```
+
 ---
 
 ## TCA9534 — I²C Address Table
@@ -33,7 +60,7 @@ The TCA9534 A2/A1/A0 pins select one of eight addresses:
 | 1  | 1  | 0  | 0100110             | 0x26 |
 | 1  | 1  | 1  | 0100111             | 0x27 |
 
-Make sure to disable the following I2C driver in tasmota when using TCA9534 by inputting the following command in Tasmota CMD console:
+Make sure to disable the following I2C driver in tasmota when using `TCA9534` by inputting the following command in Tasmota CMD console:
 
 ```
 I2cDriver36 0
