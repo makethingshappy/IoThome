@@ -156,7 +156,7 @@ See full setup instructions in:
 
 ## 📹 Demo Videos
 
-▶️ [IoThome Smart Farm Demo](Media/)
+▶️ [IoThome Smart Farm Demo](https://youtu.be/eNpTaUodwE4)
 
 ---
 
