@@ -74,6 +74,7 @@ var HARDWARE_MODE        = "i2c"  #- "i2c" or "gpio" -#
 # IoTExtra Input -> 0b11111111
 # IoTExtra Octal -> 0b00001111
 # IoTExtra Combo -> 0bxxxxxx00
+# IoTextra Quadro -> 0b11001111
 
 import string
 import global
