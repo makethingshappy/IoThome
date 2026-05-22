@@ -85,7 +85,7 @@ No external server, hub, or cloud dependency is required. Every node runs autono
 | Relay2 | ✅ Available | 🔶 Coming Soon | 🔶 Coming Soon | 🔶 Coming Soon | ✅ Available | 🔶 Coming Soon |
 | SSR Small | ✅ Available | 🔶 Coming Soon | 🔶 Coming Soon | 🔶 Coming Soon | ✅ Available | 🔶 Coming Soon |
 | MOSFET2 | ✅ Available | 🔶 Coming Soon | 🔶 Coming Soon | 🔶 Coming Soon | 🔶 Coming Soon | 🔶 Coming Soon |
-| Quadro | 🗓 Planned | 🗓 Planned | 🗓 Planned | 🗓 Planned | 🗓 Planned | 🗓 Planned |
+| Quadro | ✅ Available | 🗓 Planned | 🗓 Planned | 🗓 Planned | 🗓 Planned | 🗓 Planned |
 | Octal | ✅ Available | 🔶 Coming Soon | 🔶 Coming Soon | 🔶 Coming Soon | ✅ Available | ✅ Available |
 | Octal2 | ✅ Available | 🔶 Coming Soon | 🔶 Coming Soon | 🔶 Coming Soon | ✅ Available | ✅ Available |
 | Octal3 | 🗓 Planned | 🗓 Planned | 🗓 Planned | 🗓 Planned | 🗓 Planned | 🗓 Planned |
