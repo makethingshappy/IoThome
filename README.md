@@ -60,6 +60,31 @@ No external server, hub, or cloud dependency is required. Every node runs autono
 > ⚠️ IoTsmart ESP32-S3 requires a Tiny Adaptor Board with Cable for flashing.
 
 <!-- CARRIER_COMPATIBILITY_START -->
+# Carrier Board Software Compatibility
+
+| Carrier Board | IoTflow (Node-RED) | IoThome (Tasmota) |
+|---|:---:|:---:|
+| IoTbase PICO + Waveshare ESP32-S3-Pico | 🔶 Coming Soon | 🔶 Coming Soon |
+| IoTbase PICO + Waveshare ESP32-C6-Pico | 🔶 Coming Soon | 🔶 Coming Soon |
+| IoTbase PICO + RP2040 | [![Open](https://img.shields.io/badge/Open-green)](https://github.com/makethingshappy/IoTflow/blob/main/Documentation/SETUP.md) | — |
+| IoTbase PICO + RP2350 | [![Open](https://img.shields.io/badge/Open-green)](https://github.com/makethingshappy/IoTflow/blob/main/Documentation/SETUP.md) | — |
+| IoTbase NANO + Waveshare ESP32-S3-NANO | [![Open](https://img.shields.io/badge/Open-green)](https://github.com/makethingshappy/IoTflow/blob/main/Documentation/SETUP.md) | [![Open](https://img.shields.io/badge/Open-green)](https://github.com/makethingshappy/IoThome/blob/main/Documentation/Setup.md) |
+| IoTbase Feather + Adafruit ESP32-C6 Feather | 🔶 Coming Soon | 🔶 Coming Soon |
+| IoTbase Feather + FeatherS3[D] ESP32-S3 | 🔲 Planned | 🔲 Planned |
+| IoTsmart RP2040 | [![Open](https://img.shields.io/badge/Open-green)](https://github.com/makethingshappy/IoTflow/blob/main/Documentation/SETUP.md) | — |
+| IoTsmart RP2350A | [![Open](https://img.shields.io/badge/Open-green)](https://github.com/makethingshappy/IoTflow/blob/main/Documentation/SETUP.md) | — |
+| IoTsmart ESP32-S3 | [![Open](https://img.shields.io/badge/Open-green)](https://github.com/makethingshappy/IoTflow/blob/main/Documentation/SETUP.md) | [![Open](https://img.shields.io/badge/Open-green)](https://github.com/makethingshappy/IoThome/blob/main/Documentation/Setup.md) |
+| IoTsmart XIAO + XIAO RP2350 | 🔶 Coming Soon | — |
+| IoTsmart XIAO + XIAO ESP32-S3 | 🔶 Coming Soon | 🔶 Coming Soon |
+| IoTsmart XIAO + XIAO ESP32-C5 | 🔲 Planned | 🔲 Planned |
+| IoTsmart XIAO + XIAO ESP32-C6 | 🔲 Planned | 🔲 Planned |
+
+**Legend:**
+- [![Open](https://img.shields.io/badge/Open-green)]() — available, click to open
+- — — not applicable
+- 🔶 — Coming Soon
+- 🔲 — Planned
+
 <!-- CARRIER_COMPATIBILITY_END -->
 
 ### Supported IoTextra Modules
@@ -80,6 +105,29 @@ No external server, hub, or cloud dependency is required. Every node runs autono
 ### Template Coverage
 
 <!-- IOTEXTRA_TASMOTA_COMPATIBILITY_START -->
+# IoTextra Tasmota Compatibility
+
+| IoTextra Module | IoTsmart ESP32-S3 | IoTsmart XIAO + XIAO ESP32-S3 | IoTbase PICO + Waveshare ESP32-S3-Pico | IoTbase NANO + Waveshare ESP32-S3-NANO | IoTbase Feather + Adafruit ESP32-C6 Feather |
+|---|:---:|:---:|:---:|:---:|:---:|
+| Input | [![Template](https://img.shields.io/badge/Template-green)](https://github.com/makethingshappy/IoThome/blob/main/Tasmota_Templates/IoTsmart_ESP32-S3.md#iotextra-input) | 🔶 | 🔶 | [![Template](https://img.shields.io/badge/Template-green)](https://github.com/makethingshappy/IoThome/blob/main/Tasmota_Templates/IoTbase_Nano.md#iotextra-input) | 🔶 |
+| Relay2 | [![Template](https://img.shields.io/badge/Template-green)](https://github.com/makethingshappy/IoThome/blob/main/Tasmota_Templates/IoTsmart_ESP32-S3.md#iotextra-relay2) | 🔶 | 🔶 | [![Template](https://img.shields.io/badge/Template-green)](https://github.com/makethingshappy/IoThome/blob/main/Tasmota_Templates/IoTbase_Nano.md#iotextra-relay2) | 🔶 |
+| SSR Small | [![Template](https://img.shields.io/badge/Template-green)](https://github.com/makethingshappy/IoThome/blob/main/Tasmota_Templates/IoTsmart_ESP32-S3.md#iotextra-ssr-small) | 🔶 | 🔶 | [![Template](https://img.shields.io/badge/Template-green)](https://github.com/makethingshappy/IoThome/blob/main/Tasmota_Templates/IoTbase_Nano.md#iotextra-ssr-small) | 🔶 |
+| MOSFET2 | [![Template](https://img.shields.io/badge/Template-green)](https://github.com/makethingshappy/IoThome/blob/main/Tasmota_Templates/IoTsmart_ESP32-S3.md#iotextra-mosfet2) | 🔶 | 🔶 | 🔶 | 🔶 |
+| Quadro | 🔲 | 🔲 | 🔲 | 🔲 | 🔲 |
+| Octal | [![Template](https://img.shields.io/badge/Template-green)](https://github.com/makethingshappy/IoThome/blob/main/Tasmota_Templates/IoTsmart_ESP32-S3.md#iotextra-octal) | 🔶 | 🔶 | [![Template](https://img.shields.io/badge/Template-green)](https://github.com/makethingshappy/IoThome/blob/main/Tasmota_Templates/IoTbase_Nano.md#iotextra-octal) | [![Template](https://img.shields.io/badge/Template-green)](https://github.com/makethingshappy/IoThome/blob/main/Tasmota_Templates/IoTbase_Feather.md#iotextra-octal) |
+| Octal2 | [![Template](https://img.shields.io/badge/Template-green)](https://github.com/makethingshappy/IoThome/blob/main/Tasmota_Templates/IoTsmart_ESP32-S3.md#iotextra-octal2) | 🔶 | 🔶 | [![Template](https://img.shields.io/badge/Template-green)](https://github.com/makethingshappy/IoThome/blob/main/Tasmota_Templates/IoTbase_Nano.md#iotextra-octal2) | [![Template](https://img.shields.io/badge/Template-green)](https://github.com/makethingshappy/IoThome/blob/main/Tasmota_Templates/IoTbase_Feather.md#iotextra-octal2) |
+| Octal3 | 🔲 | 🔲 | 🔲 | 🔲 | 🔲 |
+| Analog | 🔶 | 🔶 | 🔶 | [![Template](https://img.shields.io/badge/Template-green)](https://github.com/makethingshappy/IoThome/blob/main/Tasmota_Templates/IoTbase_Nano.md#iotextra-analog) | [![Template](https://img.shields.io/badge/Template-green)](https://github.com/makethingshappy/IoThome/blob/main/Tasmota_Templates/IoTbase_Feather.md#iotextra-analog) |
+| Analog2 | 🔲 | 🔲 | 🔲 | 🔲 | 🔲 |
+| Analog3 | 🔶 | 🔶 | 🔶 | 🔶 | 🔶 |
+| Combo | 🔶 | 🔶 | 🔶 | [![Template](https://img.shields.io/badge/Template-green)](https://github.com/makethingshappy/IoThome/blob/main/Tasmota_Templates/IoTbase_Nano.md#iotextra-combo) | [![Template](https://img.shields.io/badge/Template-green)](https://github.com/makethingshappy/IoThome/blob/main/Tasmota_Templates/IoTbase_Feather.md#iotextra-combo) |
+| Combo2 | 🔲 | 🔲 | 🔲 | 🔲 | 🔲 |
+
+**Legend:**
+- [![Template](https://img.shields.io/badge/Template-green)]() — available, click to open
+- 🔶 — Coming Soon
+- 🔲 — Planned
+
 <!-- IOTEXTRA_TASMOTA_COMPATIBILITY_END -->
 
 Full template files: [`/Tasmota_Templates`](Tasmota_Templates/)
