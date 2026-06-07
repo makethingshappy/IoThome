@@ -27,3 +27,13 @@ All drivers are under active development and may change frequently.
 - Intended for IoTextra Digital I/O modules
 
 ---
+
+### ISO1211.be (Not Available for use - Under Development)
+- Sampled-mode digital input driver for `ISO1211` channels
+- Pulses FGND (TLP188) per measurement with `t_settle = 25 ms`, non-blocking
+- De-asserts all FGND GPIOs at startup as a safety requirement
+- Reads OUT via direct MCU `GPIO` or `TCA9534` I²C expander
+- Intended for IoTextra Quadro sampled-mode channels (90V DC, 110V AC, 220V AC)
+- Direct-mode channels (12–60V DC) keep using the standard DI driver
+
+---
