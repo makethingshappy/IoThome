@@ -31,8 +31,9 @@ All drivers are under active development and may change frequently.
 ### ISO1211.be (Not Available for use - Under Development)
 - Sampled-mode digital input driver for `ISO1211` channels
 - Pulses FGND (TLP188) per measurement with `t_settle = 25 ms`, non-blocking
-- De-asserts all FGND GPIOs at startup as a safety requirement
-- Reads OUT via direct MCU `GPIO` or `TCA9534` I²C expander
+- De-asserts all FGND outputs at startup as a safety requirement
+- Same I/O layer as `TCA9534.be`: `I2C` (expander) or `GPIO` (Tasmota template)
+- Each channel pairs an FGND output channel with an OUT input channel
 - Intended for IoTextra Quadro sampled-mode channels (90V DC, 110V AC, 220V AC)
 - Direct-mode channels (12–60V DC) keep using the standard DI driver
 
