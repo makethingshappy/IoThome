@@ -1,7 +1,3 @@
-#- ==================================================================
- - <!> ISO1211.be Driver Currently In Development (Not Ready for use)
- - ================================================================== -#
-
 #-
 MIT License
 
@@ -37,19 +33,20 @@ SOFTWARE.
  -        Direct-mode channels (12-60V DC, JM closed) are ordinary DI
  -        channels - use the standard DI driver (TCA9534.be) for those.
  -
- - I/O ACCESS mirrors TCA9534.be exactly - it is the proven IoThome DI
- - access layer, so this driver does NOT reinvent it:
- -   * "i2c"  mode -> TCA9534/TCA9534A I/O expander registers.
- -   * "gpio" mode -> Tasmota template assignments (set_power / get_switch).
- -
- - Each sampled-mode ISO1211 channel uses two I/O channels on that layer:
- -   * fgnd_channel - an OUTPUT  controlling the TLP188 (FGND switching).
- -   * out_channel  - an INPUT   reading the ISO1211 OUT pin (the DI value).
+ - Each sampled-mode ISO1211 channel uses:
+ -   * fgnd_relay  - FGND switching (TLP188). ALWAYS a Tasmota GPIO/relay
+ -                   driven via set_power (template based). FGND is GPIO-only;
+ -                   it is NEVER driven through the I2C expander. This is the
+ -                   parameter specific to sampled mode (spec section 4.1).
+ -   * out_channel - the ISO1211 OUT pin (the DI value). HOW it is read is set
+ -                   globally by OUT_SOURCE, mirroring TCA9534.be:
+ -                     "i2c"  -> TCA9534/TCA9534A input register.
+ -                     "gpio" -> Tasmota template switch (get_switch).
  -
  - To take a reading the driver pulses FGND ON only for the time needed to
  - obtain a stable reading (t_settle), reads OUT, then switches FGND OFF.
- - The whole sequence is non-blocking and channels are scanned one at a
- - time so only a single FGND is ever asserted (low average power).
+ - The whole sequence is non-blocking and channels are scanned one at a time
+ - so only a single FGND is ever asserted (low average power).
  - ================================================================== -#
 
 #- =========================================================
@@ -57,7 +54,7 @@ SOFTWARE.
  - Role: Independent Developer, Engineer, and Project Author
  - GitHub: @TeslaNeuro
  - MakeThingsHappy.io
- - Last Updated: 2026-06-08
+ - Last Updated: 2026-06-13
  - ========================================================= -#
 
 import string
@@ -67,8 +64,13 @@ import global
  - User Configuration - change these to match your board
  - =========================================================== -#
 
-var IOEXPANDER_ADDRESS = 0x27     #- TCA9534 0x20-0x27 / TCA9534A 0x38-0x3F (i2c mode only) -#
-var HARDWARE_MODE      = "i2c"    #- "i2c" (via TCA9534) or "gpio" (Tasmota template) -#
+#- How the ISO1211 OUT pin is read (FGND is ALWAYS gpio - see below):
+ -   "i2c"  -> OUT read from a TCA9534/TCA9534A input register.
+ -   "gpio" -> OUT read from a Tasmota template switch (get_switch). -#
+var OUT_SOURCE = "i2c"
+
+#- TCA9534 / TCA9534A address (used only when OUT_SOURCE == "i2c"). -#
+var IOEXPANDER_ADDRESS = 0x27     #- TCA9534 0x20-0x27 / TCA9534A 0x38-0x3F -#
 
 #- t_settle: universal settle time for ALL sampled-mode ranges. Covers the
  - RC settling time of the input circuit and provides a conservative inter-
@@ -78,24 +80,23 @@ var HARDWARE_MODE      = "i2c"    #- "i2c" (via TCA9534) or "gpio" (Tasmota temp
 var ISO1211_T_SETTLE = 25         #- milliseconds -#
 
 #- ---------------------------------------------------------------------
- - Per-channel configuration. Each entry is ONE sampled-mode ISO1211
- - channel, defined by two I/O channels on the TCA9534 / Tasmota template:
+ - Per-channel configuration. Each entry is ONE sampled-mode ISO1211 channel.
  -
- -   name          (string)  Friendly label used in MQTT / web output.
- -   fgnd_channel   (int 1-8) OUTPUT channel controlling the TLP188 (FGND).
- -                            This is the parameter specific to sampled mode.
- -   out_channel    (int 1-8) INPUT channel reading the ISO1211 OUT pin.
+ -   name         (string)  Friendly label used in MQTT / web output.
+ -   fgnd_relay   (int >=1)  Tasmota relay number (1-based) that drives the
+ -                           TLP188 / FGND for this channel, via set_power.
+ -                           FGND is GPIO-only and template based. Assign the
+ -                           HOST connector pin as a Relay in your template.
+ -   out_channel  (int >=1)  The OUT input channel (1-based):
+ -                             OUT_SOURCE "i2c"  -> TCA9534 P0..P7 (1..8).
+ -                             OUT_SOURCE "gpio" -> Tasmota Switch order.
  -
- - Channel numbers are 1-8 and map exactly like TCA9534.be:
- -   i2c  -> P0..P7 on the expander.
- -   gpio -> Relay order (outputs) / Switch order (inputs) in the template.
- -
- - Example below matches IoTextra Quadro (two ISO1211 channels). Adjust the
- - channel numbers to your board schematic / Tasmota template.
+ - Example below matches IoTextra Quadro (two ISO1211 channels). Adjust to
+ - your board schematic / Tasmota template.
  - --------------------------------------------------------------------- -#
 var ISO1211_CHANNELS = [
-  {"name": "ISO1211_CH1", "fgnd_channel": 5, "out_channel": 1},
-  {"name": "ISO1211_CH2", "fgnd_channel": 6, "out_channel": 2}
+  {"name": "ISO1211_CH1", "fgnd_relay": 1, "out_channel": 1},
+  {"name": "ISO1211_CH2", "fgnd_relay": 2, "out_channel": 2}
 ]
 
 #- ===========================================================
@@ -104,70 +105,64 @@ var ISO1211_CHANNELS = [
 
 class ISO1211 : Driver
 
-  # TCA9534 registers (same as TCA9534.be)
+  # TCA9534 registers (same as TCA9534.be) - used only for OUT_SOURCE "i2c"
   var INPUT_PORT_REGISTER
-  var OUTPUT_PORT_REGISTER
   var CONFIG_REGISTER
 
-  var wire              #- if wire == nil then the i2c module is not initialized -#
+  var wire              #- if wire == nil then the i2c expander is not initialized -#
   var i2cAddress
-  var hardware_mode
-  var pinConfig         #- 1 = input (out_channel), 0 = output (fgnd_channel) -#
-  var output_pin_state  #- tracks output pins on the firmware (active-low) -#
+  var out_source
 
   var channels          #- validated list of sampled-mode channel state maps -#
   var busy              #- true while a non-blocking scan round is running -#
 
-  def init(i2cAddress, hardware_mode, channels)
+  def init(out_source, i2cAddress, channels)
+    self.out_source = out_source
     self.i2cAddress = i2cAddress
-    self.hardware_mode = hardware_mode
-    self.output_pin_state = 0xFF  #- all outputs off initially (active-low) -#
     self.busy = false
 
-    self.INPUT_PORT_REGISTER  = 0x00
-    self.OUTPUT_PORT_REGISTER = 0x01
-    self.CONFIG_REGISTER      = 0x03
+    self.INPUT_PORT_REGISTER = 0x00
+    self.CONFIG_REGISTER     = 0x03
 
-    #- Validate channels and build the pin-direction bitmask:
-     - out_channel -> input (1), fgnd_channel -> output (0). -#
+    #- Validate the channel list. -#
     self.channels = []
-    self.pinConfig = 0
     for cfg : channels
       var ch = self._validate(cfg)
       if ch != nil
         self.channels.push(ch)
-        self.pinConfig = self.pinConfig | (0x01 << (ch["out_channel"] - 1))  #- mark OUT as input -#
       end
     end
 
-    #- Bring up the chosen I/O backend (identical approach to TCA9534.be). -#
-    if self.hardware_mode == "i2c"
+    #- Bring up the OUT reading backend (FGND never uses the expander). -#
+    if self.out_source == "i2c"
       self.wire = tasmota.wire_scan(self.i2cAddress)
       if self.wire
+        #- This expander is read-only here (OUT inputs), so configure all
+         - pins as inputs (TCA9534: 1 = input). -#
         self.wire._begin_transmission(self.i2cAddress)
         self.wire._write(self.CONFIG_REGISTER)
-        self.wire._write(self.pinConfig)
+        self.wire._write(0xFF)
         self.wire._end_transmission()
-        print(string.format("ISO1211: I/O Expander detected at 0x%02X on bus %i", self.i2cAddress, self.wire.bus))
-        print(string.format("ISO1211: pin directions bitmask 0x%02X (1=OUT input, 0=FGND output)", self.pinConfig))
+        print(string.format("ISO1211: OUT via TCA9534 0x%02X on bus %i (all pins input)", self.i2cAddress, self.wire.bus))
       else
-        print(string.format("ISO1211: I/O Expander not found at address 0x%02X", self.i2cAddress))
+        print(string.format("ISO1211: TCA9534 not found at 0x%02X - OUT reads will error", self.i2cAddress))
       end
-    elif self.hardware_mode == "gpio"
-      print("ISO1211: Initializing in GPIO mode (Tasmota template assignments)")
+    elif self.out_source == "gpio"
+      print("ISO1211: OUT via Tasmota template switches (get_switch)")
     else
-      print("ISO1211: invalid hardware mode, must be 'i2c' or 'gpio'")
+      print("ISO1211: invalid OUT_SOURCE, must be 'i2c' or 'gpio'")
     end
 
     #- ----------------------------------------------------------------
      - CRITICAL SAFETY REQUIREMENT (spec section 4.3):
-     - As the first action after the I/O backend is ready, de-assert every
-     - FGND output (TLP188 OFF). HOST connector pins are undefined at power-
-     - on; a floating fgnd could power the ISO1211 at full field voltage
-     - (up to 220V AC) before any measurement, causing overheating.
+     - As the first action, de-assert every FGND relay (TLP188 OFF). HOST
+     - connector pins are undefined at power-on; a floating fgnd could power
+     - the ISO1211 at full field voltage (up to 220V AC) before any
+     - measurement, causing overheating. FGND is GPIO-only, so this is a
+     - set_power(relay, false) on each channel.
      - ---------------------------------------------------------------- -#
     for ch : self.channels
-      self.set_output(ch["fgnd_channel"], false)
+      self.set_fgnd(ch, false)
     end
     print(string.format("ISO1211: %i sampled-mode channel(s) ready, all FGND de-asserted, t_settle=%ims",
                          size(self.channels), ISO1211_T_SETTLE))
@@ -178,84 +173,49 @@ class ISO1211 : Driver
   def _validate(cfg)
     var name = cfg.find("name", "ISO1211")
 
-    var fgnd = cfg.find("fgnd_channel")
-    if fgnd == nil || type(fgnd) != "int" || fgnd < 1 || fgnd > 8
-      print(string.format("ISO1211: [%s] rejected - 'fgnd_channel' must be an integer 1..8", name))
+    var fgnd = cfg.find("fgnd_relay")
+    if fgnd == nil || type(fgnd) != "int" || fgnd < 1
+      print(string.format("ISO1211: [%s] rejected - 'fgnd_relay' must be an integer >= 1", name))
       return nil
     end
 
     var out = cfg.find("out_channel")
-    if out == nil || type(out) != "int" || out < 1 || out > 8
-      print(string.format("ISO1211: [%s] rejected - 'out_channel' must be an integer 1..8", name))
+    if out == nil || type(out) != "int" || out < 1
+      print(string.format("ISO1211: [%s] rejected - 'out_channel' must be an integer >= 1", name))
       return nil
     end
-
-    if fgnd == out
-      print(string.format("ISO1211: [%s] rejected - 'fgnd_channel' and 'out_channel' must differ", name))
+    if self.out_source == "i2c" && out > 8
+      print(string.format("ISO1211: [%s] rejected - 'out_channel' must be 1..8 for i2c (P0..P7)", name))
       return nil
     end
 
     return {
-      "name":         name,
-      "fgnd_channel": fgnd,
-      "out_channel":  out,
-      "value":        nil,    #- last confirmed DI value (0/1), nil = unknown -#
-      "error":        false   #- per-channel error flag -#
+      "name":        name,
+      "fgnd_relay":  fgnd,
+      "out_channel": out,
+      "value":       nil,    #- last confirmed DI value (0/1), nil = unknown -#
+      "error":       false   #- per-channel error flag -#
     }
   end
 
   #- ----------------------------------------------------------------
-   - Output (FGND) control - mirrors TCA9534.be set_output(). Active-low,
-   - so state true ("assert"/TLP188 ON) clears the bit, state false
-   - ("de-assert"/TLP188 OFF) sets it. Polarity can be flipped in the
-   - Tasmota template (REL_INV) or in hardware if your board differs.
+   - FGND control - GPIO ONLY, via Tasmota set_power (template based).
+   - state true  = assert   (TLP188 ON,  FGND connected, measuring)
+   - state false = de-assert (TLP188 OFF, FGND disconnected, safe/idle)
+   - Tasmota relays are 0-based, so relay N maps to set_power(N-1). Polarity
+   - can be flipped in the template (Relay_i_INV) or in hardware if needed.
    - ---------------------------------------------------------------- -#
-  def set_output(channel, output_state)
-    if channel < 1 || channel > 8 return nil end
-
-    #- reject pins configured as input (1 in pinConfig) -#
-    if (self.pinConfig >> (channel - 1)) & 0x01
-      print(string.format("ISO1211: channel %i is an input, cannot drive FGND", channel))
-      return nil
-    end
-
-    if self.hardware_mode == "i2c"
-      if !self.wire return nil end
-      if self.output_pin_state == nil return nil end
-
-      var pin_index = channel - 1
-      if output_state
-        self.output_pin_state = self.output_pin_state & ~(1 << pin_index)
-      else
-        self.output_pin_state = self.output_pin_state | (1 << pin_index)
-      end
-
-      self.wire._begin_transmission(self.i2cAddress)
-      self.wire._write(self.OUTPUT_PORT_REGISTER)
-      self.wire._write(self.output_pin_state)
-      self.wire._end_transmission()
-
-    elif self.hardware_mode == "gpio"
-      #- Count how many output channels exist BEFORE this channel -> relay index -#
-      var relay_idx = 0
-      for i:0..(channel - 2)
-        if ((self.pinConfig >> i) & 0x01) == 0  #- is output -#
-          relay_idx = relay_idx + 1
-        end
-      end
-      tasmota.set_power(relay_idx, output_state)
-    end
-
-    return output_state
+  def set_fgnd(ch, state)
+    tasmota.set_power(ch["fgnd_relay"] - 1, state)
   end
 
-  #- Read a single INPUT (OUT) channel. Mirrors TCA9534.be read_all_inputs()
-   - logic (active-low invert in i2c, Tasmota switch in gpio). Returns 0/1,
-   - or nil on error. -#
-  def read_input(channel)
-    if channel < 1 || channel > 8 return nil end
+  #- Read a channel's ISO1211 OUT pin. Returns 0/1, or nil on error.
+   - Mirrors TCA9534.be read logic: active-low invert over i2c, Tasmota
+   - switch in gpio mode. -#
+  def read_out(ch)
+    var channel = ch["out_channel"]
 
-    if self.hardware_mode == "i2c"
+    if self.out_source == "i2c"
       if !self.wire return nil end
       var r = self.wire.read(self.i2cAddress, self.INPUT_PORT_REGISTER, 1)
       if r == nil return nil end
@@ -263,7 +223,7 @@ class ISO1211 : Driver
       #- active-low hardware: 0 = signal present, so invert (same as TCA9534) -#
       return state ^ 0x01
 
-    elif self.hardware_mode == "gpio"
+    elif self.out_source == "gpio"
       var switches = tasmota.get_switch()
       var i = channel - 1
       if switches && size(switches) > i
@@ -300,7 +260,7 @@ class ISO1211 : Driver
     var ch = self.channels[idx]
 
     #- Assert FGND (TLP188 ON) for this channel only. -#
-    self.set_output(ch["fgnd_channel"], true)
+    self.set_fgnd(ch, true)
 
     #- Wait t_settle WITHOUT blocking, then read + de-assert + advance. -#
     tasmota.set_timer(ISO1211_T_SETTLE, def () self._finish_channel(idx) end)
@@ -309,10 +269,10 @@ class ISO1211 : Driver
   #- Read OUT, de-assert FGND, store the DI value, then move on. -#
   def _finish_channel(idx)
     var ch = self.channels[idx]
-    var di = self.read_input(ch["out_channel"])
+    var di = self.read_out(ch)
 
     #- De-assert FGND immediately after the read (TLP188 OFF). -#
-    self.set_output(ch["fgnd_channel"], false)
+    self.set_fgnd(ch, false)
 
     if di == nil
       ch["error"] = true
@@ -381,14 +341,13 @@ class ISO1211 : Driver
     if channel < 1 || channel > size(self.channels) return nil end
     if self.busy return nil end
 
-    var idx = channel - 1
-    var ch = self.channels[idx]
+    var ch = self.channels[channel - 1]
     self.busy = true
-    self.set_output(ch["fgnd_channel"], true)
+    self.set_fgnd(ch, true)
 
     tasmota.set_timer(ISO1211_T_SETTLE, def ()
-      var di = self.read_input(ch["out_channel"])
-      self.set_output(ch["fgnd_channel"], false)
+      var di = self.read_out(ch)
+      self.set_fgnd(ch, false)
       if di == nil
         ch["error"] = true
       else
@@ -401,5 +360,5 @@ class ISO1211 : Driver
   end
 end
 
-global.iso1211 = ISO1211(IOEXPANDER_ADDRESS, HARDWARE_MODE, ISO1211_CHANNELS)
+global.iso1211 = ISO1211(OUT_SOURCE, IOEXPANDER_ADDRESS, ISO1211_CHANNELS)
 tasmota.add_driver(global.iso1211)
