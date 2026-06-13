@@ -1,7 +1,7 @@
 #- ==================================================================
  - <!> ISO1211.be Driver Currently In Development (Not Ready for use)
  - ================================================================== -#
-
+ 
 #-
 MIT License
 
@@ -80,8 +80,16 @@ var IOEXPANDER_ADDRESS = 0x27     #- TCA9534 0x20-0x27 / TCA9534A 0x38-0x3F -#
  - RC settling time of the input circuit and provides a conservative inter-
  - measurement interval that limits average power dissipation. Generous on
  - purpose to tolerate AC mains instability. Decrease only if you understand
- - the thermal implications (IoTextra DI Driver Spec, section 4.2). -#
-var ISO1211_T_SETTLE = 25         #- milliseconds -#
+ - the thermal implications (IoTextra DI Driver Spec, section 4.2).
+ -
+ - NOTE on timing: this delay is implemented with tasmota.set_timer, which
+ - has ~50ms tick resolution. Values below 50ms therefore round UP to the
+ - next tick, so the real FGND-on time is ~50ms regardless of a smaller
+ - setting. That is harmless here - a longer settle only makes the reading
+ - MORE reliable and the duty cycle is still tiny (~50ms on per ~1000ms
+ - scan). We deliberately do NOT block to hit 25ms exactly: blocking would
+ - violate the non-blocking requirement (spec section 5). -#
+var ISO1211_T_SETTLE = 25         #- milliseconds (effective minimum ~50ms, see note) -#
 
 #- ---------------------------------------------------------------------
  - Per-channel configuration. Each entry is ONE sampled-mode ISO1211 channel.
@@ -99,8 +107,8 @@ var ISO1211_T_SETTLE = 25         #- milliseconds -#
  - your board schematic / Tasmota template.
  - --------------------------------------------------------------------- -#
 var ISO1211_CHANNELS = [
-  {"name": "ISO1211_CH1", "fgnd_relay": 1, "out_channel": 1},
-  {"name": "ISO1211_CH2", "fgnd_relay": 2, "out_channel": 2}
+  {"name": "ISO1211_CH1", "fgnd_relay": 3, "out_channel": 1},
+  {"name": "ISO1211_CH2", "fgnd_relay": 4, "out_channel": 2}
 ]
 
 #- ===========================================================
@@ -266,7 +274,8 @@ class ISO1211 : Driver
     #- Assert FGND (TLP188 ON) for this channel only. -#
     self.set_fgnd(ch, true)
 
-    #- Wait t_settle WITHOUT blocking, then read + de-assert + advance. -#
+    #- Wait t_settle WITHOUT blocking, then read + de-assert + advance.
+     - set_timer rounds up to the next ~50ms tick (see ISO1211_T_SETTLE note). -#
     tasmota.set_timer(ISO1211_T_SETTLE, def () self._finish_channel(idx) end)
   end
 
