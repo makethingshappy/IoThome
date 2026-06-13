@@ -28,7 +28,7 @@ All drivers are under active development and may change frequently.
 
 ---
 
-### ISO1211.be
+### ISO1211.be (Not Available for use - Under Development)
 - Sampled-mode digital input driver for `ISO1211` channels
 - Pulses FGND (TLP188) per measurement with `t_settle = 25 ms`, non-blocking
 - FGND switching is **GPIO only** (Tasmota relay via `set_power`)
