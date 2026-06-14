@@ -76,13 +76,16 @@ var OUT_SOURCE = "i2c"
 #- TCA9534 / TCA9534A address (used only when OUT_SOURCE == "i2c"). -#
 var IOEXPANDER_ADDRESS = 0x27     #- TCA9534 0x20-0x27 / TCA9534A 0x38-0x3F -#
 
-#- OUT polarity (how the raw OUT level maps to the logical DI value):
- -   true  -> ACTIVE-LOW : raw low  = DI 1 (signal present), i.e. invert.
- -            DEFAULT, matches IoTextra (same active-low convention as the
- -            TCA9534 DI driver, where 0 = signal present).
- -   false -> ACTIVE-HIGH: raw high = DI 1 (signal present).
+#- OUT polarity. The driver already applies the standard IoTextra convention
+ - per source, exactly like TCA9534.be:
+ -   * i2c  -> active-low: register bit 0 = signal present -> DI 1.
+ -   * gpio -> tasmota.get_switch() is already logical: true = PRESSED -> DI 1.
+ - OUT_INVERT is an OPTIONAL EXTRA inversion of the final DI, only needed for
+ - boards wired opposite to that convention:
+ -   false -> use the standard convention (DEFAULT, matches TCA9534.be).
+ -   true  -> flip the DI value.
  - Can be overridden per channel with an "invert" key in ISO1211_CHANNELS. -#
-var OUT_INVERT = true
+var OUT_INVERT = false
 
 #- t_settle: universal settle time for ALL sampled-mode ranges. Covers the
  - RC settling time of the input circuit and provides a conservative inter-
@@ -110,15 +113,16 @@ var ISO1211_T_SETTLE = 25         #- milliseconds (effective minimum ~50ms, see 
  -   out_channel  (int >=1)  The OUT input channel (1-based):
  -                             OUT_SOURCE "i2c"  -> TCA9534 P0..P7 (1..8).
  -                             OUT_SOURCE "gpio" -> Tasmota Switch order.
- -   invert       (bool)     OPTIONAL per-channel polarity override. Defaults
- -                           to OUT_INVERT. false = active-high, true = active-low.
+ -   invert       (bool)     OPTIONAL extra inversion of the final DI for this
+ -                           channel (defaults to OUT_INVERT). Leave at the
+ -                           default unless this channel reads reversed.
  -
  - Example below matches IoTextra Quadro (two ISO1211 channels). Adjust to
  - your board schematic / Tasmota template.
  - --------------------------------------------------------------------- -#
 var ISO1211_CHANNELS = [
-  {"name": "ISO1211_CH1", "fgnd_relay": 3, "out_channel": 1},
-  {"name": "ISO1211_CH2", "fgnd_relay": 4, "out_channel": 2}
+  {"name": "ISO1211_CH1", "fgnd_relay": 3, "out_channel": 1, "invert": false},
+  {"name": "ISO1211_CH2", "fgnd_relay": 4, "out_channel": 2, "invert": false}
 ]
 
 #- ===========================================================
@@ -215,7 +219,7 @@ class ISO1211 : Driver
       "name":        name,
       "fgnd_relay":  fgnd,
       "out_channel": out,
-      "invert":      cfg.find("invert", OUT_INVERT),  #- true = active-low (default) -#
+      "invert":      cfg.find("invert", OUT_INVERT),  #- optional extra flip; default OUT_INVERT (false) -#
       "value":       nil,    #- last confirmed DI value (0/1), nil = unknown -#
       "error":       false   #- per-channel error flag -#
     }
@@ -238,26 +242,36 @@ class ISO1211 : Driver
    - applied uniformly. -#
   def read_out(ch)
     var channel = ch["out_channel"]
-    var raw
+    var base
 
     if self.out_source == "i2c"
       if !self.wire return nil end
       var r = self.wire.read(self.i2cAddress, self.INPUT_PORT_REGISTER, 1)
       if r == nil return nil end
-      raw = (r >> (channel - 1)) & 0x01
+      #- TCA9534 active-low: register bit 0 = signal present -> DI 1
+       - (same convention as TCA9534.be, which does (bit ^ 1)). -#
+      base = ((r >> (channel - 1)) & 0x01) ^ 0x01
 
     elif self.out_source == "gpio"
+      #- tasmota.get_switch() returns list(bool) of the LOGICAL switch state,
+       - true = PRESSED (active) -> DI 1. Already normalized by Tasmota, so it
+       - is NOT inverted here - exactly like TCA9534.be's gpio path.
+       - NOTE: the list is PACKED for DEFINED switches only; if the template
+       - has holes (e.g. SWITCH1 + SWITCH3), out_channel is the position in
+       - that packed list, not the absolute switch number. -#
       var switches = tasmota.get_switch()
       var i = channel - 1
       if !(switches && size(switches) > i) return nil end
-      raw = switches[i] ? 1 : 0
+      base = switches[i] ? 1 : 0
 
     else
       return nil
     end
 
-    #- active-low (default, invert): DI = raw ^ 1. active-high: DI = raw. -#
-    return ch["invert"] ? (raw ^ 0x01) : raw
+    #- "base" already follows the standard IoTextra convention (DI 1 = signal
+     - present). OUT_INVERT / per-channel "invert" is an OPTIONAL extra flip
+     - for boards wired opposite; default false = no flip (matches TCA9534.be). -#
+    return ch["invert"] ? (base ^ 0x01) : base
   end
 
   #- ----------------------------------------------------------------
