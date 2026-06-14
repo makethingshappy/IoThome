@@ -76,6 +76,14 @@ var OUT_SOURCE = "i2c"
 #- TCA9534 / TCA9534A address (used only when OUT_SOURCE == "i2c"). -#
 var IOEXPANDER_ADDRESS = 0x27     #- TCA9534 0x20-0x27 / TCA9534A 0x38-0x3F -#
 
+#- OUT polarity (how the raw OUT level maps to the logical DI value):
+ -   true  -> ACTIVE-LOW : raw low  = DI 1 (signal present), i.e. invert.
+ -            DEFAULT, matches IoTextra (same active-low convention as the
+ -            TCA9534 DI driver, where 0 = signal present).
+ -   false -> ACTIVE-HIGH: raw high = DI 1 (signal present).
+ - Can be overridden per channel with an "invert" key in ISO1211_CHANNELS. -#
+var OUT_INVERT = true
+
 #- t_settle: universal settle time for ALL sampled-mode ranges. Covers the
  - RC settling time of the input circuit and provides a conservative inter-
  - measurement interval that limits average power dissipation. Generous on
@@ -102,6 +110,8 @@ var ISO1211_T_SETTLE = 25         #- milliseconds (effective minimum ~50ms, see 
  -   out_channel  (int >=1)  The OUT input channel (1-based):
  -                             OUT_SOURCE "i2c"  -> TCA9534 P0..P7 (1..8).
  -                             OUT_SOURCE "gpio" -> Tasmota Switch order.
+ -   invert       (bool)     OPTIONAL per-channel polarity override. Defaults
+ -                           to OUT_INVERT. false = active-high, true = active-low.
  -
  - Example below matches IoTextra Quadro (two ISO1211 channels). Adjust to
  - your board schematic / Tasmota template.
@@ -205,6 +215,7 @@ class ISO1211 : Driver
       "name":        name,
       "fgnd_relay":  fgnd,
       "out_channel": out,
+      "invert":      cfg.find("invert", OUT_INVERT),  #- true = active-low (default) -#
       "value":       nil,    #- last confirmed DI value (0/1), nil = unknown -#
       "error":       false   #- per-channel error flag -#
     }
@@ -221,30 +232,32 @@ class ISO1211 : Driver
     tasmota.set_power(ch["fgnd_relay"] - 1, state)
   end
 
-  #- Read a channel's ISO1211 OUT pin. Returns 0/1, or nil on error.
-   - Mirrors TCA9534.be read logic: active-low invert over i2c, Tasmota
-   - switch in gpio mode. -#
+  #- Read a channel's ISO1211 OUT pin. Returns the logical DI value (0/1),
+   - or nil on error. The raw level is read from the configured OUT source,
+   - then the channel's polarity (active-low by default, see OUT_INVERT) is
+   - applied uniformly. -#
   def read_out(ch)
     var channel = ch["out_channel"]
+    var raw
 
     if self.out_source == "i2c"
       if !self.wire return nil end
       var r = self.wire.read(self.i2cAddress, self.INPUT_PORT_REGISTER, 1)
       if r == nil return nil end
-      var state = (r >> (channel - 1)) & 0x01
-      #- active-low hardware: 0 = signal present, so invert (same as TCA9534) -#
-      return state ^ 0x01
+      raw = (r >> (channel - 1)) & 0x01
 
     elif self.out_source == "gpio"
       var switches = tasmota.get_switch()
       var i = channel - 1
-      if switches && size(switches) > i
-        return switches[i] ? 1 : 0
-      end
+      if !(switches && size(switches) > i) return nil end
+      raw = switches[i] ? 1 : 0
+
+    else
       return nil
     end
 
-    return nil
+    #- active-low (default, invert): DI = raw ^ 1. active-high: DI = raw. -#
+    return ch["invert"] ? (raw ^ 0x01) : raw
   end
 
   #- ----------------------------------------------------------------
