@@ -121,8 +121,8 @@ var ISO1211_T_SETTLE = 25         #- milliseconds (effective minimum ~50ms, see 
  - your board schematic / Tasmota template.
  - --------------------------------------------------------------------- -#
 var ISO1211_CHANNELS = [
-  {"name": "ISO1211_CH1", "fgnd_relay": 3, "out_channel": 1, "invert": false},
-  {"name": "ISO1211_CH2", "fgnd_relay": 4, "out_channel": 2, "invert": false}
+  {"name": "ISO1211_CH1", "fgnd_relay": 3, "out_channel": 1, "invert": true},
+  {"name": "ISO1211_CH2", "fgnd_relay": 4, "out_channel": 2, "invert": true}
 ]
 
 #- ===========================================================
