@@ -193,7 +193,8 @@ IoThome/
 ├── Berry_Drivers/           # Low-level Berry drivers for IoTextra hardware
 │   ├── ADS1115Data.be       # ADS1115 analog ADC driver (voltage & current)
 │   ├── TCA9534.be           # TCA9534/TCA9534A digital I/O expander driver
-│   └── ADS7828.be           # ADS7828 analog ADC driver (IoTextra Analog 3)
+│   ├── ADS7828.be           # ADS7828 analog ADC driver (IoTextra Analog 3)
+│   └── ISO1211.be           # ISO1211 digital I/O driver (IoTextra Quadro)
 │
 ├── Documentation/           # Setup guides and parameter references
 │
