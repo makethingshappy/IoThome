@@ -41,7 +41,7 @@ SOFTWARE.
  -   * out_channel - the ISO1211 OUT pin (the DI value). HOW it is read is set
  -                   globally by OUT_SOURCE, mirroring TCA9534.be:
  -                     "i2c"  -> TCA9534/TCA9534A input register.
- -                     "gpio" -> Tasmota template switch (get_switch).
+ -                     "gpio" -> Tasmota template Switch number (1-based).
  -
  - To take a reading the driver pulses FGND ON only for the time needed to
  - obtain a stable reading (t_settle), reads OUT, then switches FGND OFF.
@@ -54,7 +54,7 @@ SOFTWARE.
  - Role: Independent Developer, Engineer, and Project Author
  - GitHub: @TeslaNeuro
  - MakeThingsHappy.io
- - Last Updated: 2026-06-13
+ - Last Updated: 2026-06-20
  - ========================================================= -#
 
 import string
@@ -66,7 +66,7 @@ import global
 
 #- How the ISO1211 OUT pin is read (FGND is ALWAYS gpio - see below):
  -   "i2c"  -> OUT read from a TCA9534/TCA9534A input register.
- -   "gpio" -> OUT read from a Tasmota template switch (get_switch). -#
+ -   "gpio" -> OUT read from a Tasmota template Switch (get_switches). -#
 var OUT_SOURCE = "i2c"
 
 #- TCA9534 / TCA9534A address (used only when OUT_SOURCE == "i2c"). -#
@@ -75,7 +75,7 @@ var IOEXPANDER_ADDRESS = 0x27     #- TCA9534 0x20-0x27 / TCA9534A 0x38-0x3F -#
 #- OUT polarity. The driver already applies the standard IoTextra convention
  - per source, exactly like TCA9534.be:
  -   * i2c  -> active-low: register bit 0 = signal present -> DI 1.
- -   * gpio -> tasmota.get_switch() is already logical: true = PRESSED -> DI 1.
+ -   * gpio -> active-low: Switch pin LOW = signal present -> DI 1.
  - OUT_INVERT is an OPTIONAL EXTRA inversion of the final DI, only needed for
  - boards wired opposite to that convention:
  -   false -> use the standard convention (DEFAULT, matches TCA9534.be).
@@ -108,17 +108,28 @@ var ISO1211_T_SETTLE = 25         #- milliseconds (effective minimum ~50ms, see 
  -                           HOST connector pin as a Relay in your template.
  -   out_channel  (int >=1)  The OUT input channel (1-based):
  -                             OUT_SOURCE "i2c"  -> TCA9534 P0..P7 (1..8).
- -                             OUT_SOURCE "gpio" -> Tasmota Switch order.
+ -                             OUT_SOURCE "gpio" -> Tasmota Switch NUMBER as
+ -                                                  assigned in the template
+ -                                                  (e.g. Switch1=1, Switch3=3).
+ -                                                  The driver enumerates the
+ -                                                  template at init to build a
+ -                                                  Switch-number -> packed-index
+ -                                                  map, so template holes are
+ -                                                  handled correctly and a
+ -                                                  misconfigured channel returns
+ -                                                  nil (explicit error).
  -   invert       (bool)     OPTIONAL extra inversion of the final DI for this
  -                           channel (defaults to OUT_INVERT). Leave at the
  -                           default unless this channel reads reversed.
  -
- - Example below matches IoTextra Quadro (two ISO1211 channels). Adjust to
- - your board schematic / Tasmota template.
+ - Example below matches IoTextra Quadro (two ISO1211 channels, OUT pins wired
+ - active-low to TCA9534 P0/P1 via R18/R19 pull-ups). The ^ 0x01 in read_out()
+ - already corrects for active-low, so "invert" is omitted (defaults to false).
+ - Adjust fgnd_relay and out_channel to your board schematic / Tasmota template.
  - --------------------------------------------------------------------- -#
 var ISO1211_CHANNELS = [
-  {"name": "ISO1211_CH1", "fgnd_relay": 3, "out_channel": 1, "invert": true},
-  {"name": "ISO1211_CH2", "fgnd_relay": 4, "out_channel": 2, "invert": true}
+  {"name": "ISO1211_CH1", "fgnd_relay": 3, "out_channel": 1},
+  {"name": "ISO1211_CH2", "fgnd_relay": 4, "out_channel": 2}
 ]
 
 #- ===========================================================
@@ -137,6 +148,11 @@ class ISO1211 : Driver
 
   var channels          #- validated list of sampled-mode channel state maps -#
   var busy              #- true while a non-blocking scan round is running -#
+
+  #- gpio path only: map of Switch number (1-based) -> packed index in
+   - tasmota.get_switches(). Built once at init by enumerating the template
+   - with gpio.pin_used(gpio.SWT1, i). nil if OUT_SOURCE != "gpio". -#
+  var switch_index_map
 
   def init(out_source, i2cAddress, channels)
     self.out_source = out_source
@@ -169,8 +185,43 @@ class ISO1211 : Driver
       else
         print(string.format("ISO1211: TCA9534 not found at 0x%02X - OUT reads will error", self.i2cAddress))
       end
+
     elif self.out_source == "gpio"
-      print("ISO1211: OUT via Tasmota template switches (get_switch)")
+      #- Build Switch-number -> packed-index map by enumerating the template.
+       -
+       - tasmota.get_switches() returns a PACKED list containing only the
+       - switches actually defined in the template, with no gaps. The position
+       - in that list does NOT correspond to the Switch number - e.g. if only
+       - Switch1 and Switch3 are defined, get_switches() returns [x, y] where
+       - index 0 = Switch1 and index 1 = Switch3 (Switch2 is absent).
+       -
+       - gpio.pin_used(gpio.SWT1, i) lets us enumerate which Switch numbers
+       - are actually present (i is 0-based: i=0 -> Switch1, i=2 -> Switch3).
+       - We iterate up to 32 slots and count each present switch to derive its
+       - packed index, then store Switch_number -> packed_index in the map.
+       -
+       - Example result for a template with Switch1 and Switch3:
+       -   switch_index_map = {1: 0, 3: 1}
+       - So out_channel=1 -> packed index 0, out_channel=3 -> packed index 1.
+       -
+       - If out_channel is not in the map, read_out() returns nil, giving an
+       - explicit error rather than a silent wrong result. -#
+      self.switch_index_map = {}
+      var packed_idx = 0
+      var i = 0
+      while i < 32
+        if gpio.pin_used(gpio.SWT1, i)
+          self.switch_index_map[i + 1] = packed_idx   #- Switch number is i+1 (1-based) -#
+          packed_idx += 1
+        end
+        i += 1
+      end
+      print(string.format("ISO1211: OUT via Tasmota template switches, %i switch(es) found", packed_idx))
+      #- Log the map so users can verify their template is seen correctly. -#
+      for sw_num : self.switch_index_map.keys()
+        print(string.format("ISO1211:   Switch%i -> packed index %i", sw_num, self.switch_index_map[sw_num]))
+      end
+
     else
       print("ISO1211: invalid OUT_SOURCE, must be 'i2c' or 'gpio'")
     end
@@ -249,16 +300,26 @@ class ISO1211 : Driver
       base = ((r >> (channel - 1)) & 0x01) ^ 0x01
 
     elif self.out_source == "gpio"
-      #- tasmota.get_switch() returns list(bool) of the LOGICAL switch state,
-       - true = PRESSED (active) -> DI 1. Already normalized by Tasmota, so it
-       - is NOT inverted here - exactly like TCA9534.be's gpio path.
-       - NOTE: the list is PACKED for DEFINED switches only; if the template
-       - has holes (e.g. SWITCH1 + SWITCH3), out_channel is the position in
-       - that packed list, not the absolute switch number. -#
-      var switches = tasmota.get_switch()
-      var i = channel - 1
-      if !(switches && size(switches) > i) return nil end
-      base = switches[i] ? 1 : 0
+      #- Translate the Switch NUMBER (out_channel, 1-based as assigned in the
+       - Tasmota template) to its packed index in tasmota.get_switches().
+       -
+       - The map was built at init() by enumerating gpio.pin_used(gpio.SWT1, i),
+       - so it correctly handles template holes (e.g. Switch1 + Switch3 with no
+       - Switch2). If out_channel is not in the map, the switch is not defined
+       - in the template - return nil for an explicit misconfiguration error. -#
+      var packed_idx = self.switch_index_map.find(channel)
+      if packed_idx == nil
+        return nil   #- Switch number not defined in template - explicit error -#
+      end
+
+      var switches = tasmota.get_switches()
+      if switches == nil || size(switches) <= packed_idx return nil end
+
+      #- tasmota.get_switches() returns logical values (true = PRESSED = active).
+       - ISO1211 OUT is active-low: signal present -> pin LOW -> NOT PRESSED = false.
+       - We apply ^ 0x01 to match the i2c path convention (DI 1 = signal present). -#
+      base = switches[packed_idx] ? 1 : 0
+      base = base ^ 0x01
 
     else
       return nil
