@@ -249,6 +249,7 @@ Berry drivers are `.be` files that run directly on the ESP32 inside Tasmota. Upl
 | IoTextra Analog Input (ADS1115) | `ADS1115Data.be` |
 | IoTextra Analog 3 (ADS7828) | `ADS7828.be` |
 | IoTextra Relay / Digital I/O (TCA9534 or TCA9534A) | `TCA9534.be` |
+| IoTextra Quadro — ISO1211 **sampled-mode** channels (90 V DC / 110 V AC / 220 V AC) | `ISO1211.be` |
 
 **3.** Click **Upload** for each file. You will see it appear in the file list once uploaded successfully.
 
@@ -354,6 +355,34 @@ var HARDWARE_MODE        = "i2c"       # "i2c" or "gpio"
 | Pin config string | Check the schematic for your IoTextra module — common presets are listed in the driver documentation |
 | Hardware mode | Use `"i2c"` unless your channels are directly wired to ESP32 GPIO pins |
 
+### ISO1211 (`ISO1211.be`)
+
+> ⚠️ This driver is **only** for IoTextra Quadro channels in **sampled mode** (JM jumper **open**: 90 V DC, 110 V AC, 220 V AC). Direct-mode channels (12–60 V DC, JM closed) are ordinary DI inputs — use `TCA9534.be` for those.
+
+```berry
+var OUT_SOURCE         = "i2c"    # how OUT is read: "i2c" (TCA9534) or "gpio" (Tasmota switch)
+var IOEXPANDER_ADDRESS = 0x27     # TCA9534 0x20-0x27 / TCA9534A 0x38-0x3F (only when OUT_SOURCE = i2c)
+var OUT_INVERT         = false    # optional EXTRA flip of the DI value (default = standard IoTextra convention)
+var ISO1211_T_SETTLE   = 25       # FGND settle time per reading, ms (effective ~50 ms, see note below)
+
+var ISO1211_CHANNELS = [
+  {"name": "ISO1211_CH1", "fgnd_relay": 3, "out_channel": 1, "invert": false},
+  {"name": "ISO1211_CH2", "fgnd_relay": 4, "out_channel": 2, "invert": false}
+]
+```
+
+| What to check | Where to find the answer |
+|---|---|
+| `OUT_SOURCE` | `"i2c"` reads OUT from a TCA9534/TCA9534A input register; `"gpio"` reads it from a Tasmota template switch. FGND is **always** GPIO regardless of this. |
+| `fgnd_relay` (per channel) | The Tasmota **relay** number driving that channel's TLP188 / FGND. Assign the HOST connector pin as a `Relay` in your template, then put its relay number here. **This is the parameter unique to sampled mode.** |
+| `out_channel` (per channel) | Where OUT is read: `i2c` → TCA9534 `P0..P7` (1..8); `gpio` → position in the packed template-switch list. |
+| `OUT_INVERT` / per-channel `invert` | Leave `false` — the driver already applies the standard active-low convention. Only flip if a channel reads reversed on your wiring. |
+| `ISO1211_T_SETTLE` | Universal `25 ms` for all sampled ranges. Decrease only if you understand the thermal trade-offs. |
+
+> ⚠️ **Safety / thermal:** This driver pulses FGND **on** only briefly (~50 ms) to take each reading, then **off**, and scans channels one at a time so only one channel is ever energized. This is mandatory in sampled mode — at up to 220 V AC, leaving FGND on continuously would overheat the ISO1211. Do **not** change the scan to fire faster than once per second, and keep the startup FGND de-assertion intact. See [`/Documentation/Berry Drivers.md`](./Berry%20Drivers.md) for full details.
+
+> 💡 **Timing note:** `tasmota.set_timer` has ~50 ms resolution, so a `t_settle` of 25 ms rounds up to a real ~50 ms pulse. That is harmless — a longer settle only makes the reading more reliable while keeping the duty cycle tiny.
+
 **3.** Save the file after editing.
 
 ---
@@ -374,6 +403,7 @@ Tasmota runs `autoexec.be` automatically on every boot. You need to create this 
 load('ADS1115Data.be')
 load('ADS7828.be')
 load('TCA9534.be')
+load('ISO1211.be')   # IoTextra Quadro, sampled-mode ISO1211 channels only
 ```
 
 **3.** Save the file.
@@ -435,6 +465,24 @@ This prints the current sensor JSON payload. You should see your driver data nes
 ```
 
 This is the same payload that gets published to MQTT if you have a broker configured.
+
+### Check ISO1211 (sampled-mode) channels
+
+On boot the driver prints a readiness line confirming all FGND relays were de-asserted:
+
+```
+ISO1211: 2 sampled-mode channel(s) ready, all FGND de-asserted, t_settle=25ms
+```
+
+Once per second it pulses each channel's FGND, reads OUT, and publishes a `RESULT` like:
+
+```json
+{"ISO1211":{"ISO1211_CH1":{"DI":0,"error":false},"ISO1211_CH2":{"DI":0,"error":false}}}
+```
+
+- `DI` is the logical input: `0` = no signal, `1` = signal present. With nothing connected, `DI:0` is correct.
+- `error:false` means the OUT read succeeded (it flags a read/comms failure, **not** a field fault).
+- You will also see the FGND relays toggle (e.g. `POWER3 ON/OFF`, `POWER4 ON/OFF`) — that is the normal pulse-and-read sequence, not a glitch.
 
 ---
 

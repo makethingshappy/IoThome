@@ -155,3 +155,37 @@ HARDWARE_MODE
   ├── 'gpio'  →  Access via AP0–AP7 on HOST connector
   └── 'i2c'   →  Access via P0–P7 on TCA9534/TCA9534A at configured I²C address
 ```
+
+---
+
+## ISO1211 (Sampled-Mode) — FGND & OUT Mapping
+
+The `ISO1211.be` driver handles **sampled-mode** IoTextra Quadro channels (JM jumper **open**: 90 V DC, 110 V AC, 220 V AC). Direct-mode channels (12–60 V DC, JM closed) are ordinary DI inputs handled by `TCA9534.be`.
+
+> **The ISO1211 is an isolated digital-input receiver, not an I²C device — it has no I²C address of its own.** Each sampled channel uses two separate signals: a **FGND** control output (always GPIO) and an **OUT** read input (I²C *or* GPIO). The I²C address only ever refers to the **TCA9534/TCA9534A expander** used to read OUT.
+
+Each channel in `ISO1211_CHANNELS` maps as follows:
+
+| Driver parameter | Signal | Maps to | Notes |
+|---|---|---|---|
+| `fgnd_relay` = N | **FGND** (TLP188 control) | Tasmota **Relay N** → a HOST connector pin (`AP0–AP7`) assigned as a `Relay` in your template | **Always GPIO.** Never uses the I²C expander. This is the parameter unique to sampled mode. |
+| `out_channel` = N, `OUT_SOURCE = "i2c"` | **OUT** (the DI value) | `P(N-1)` on the TCA9534/TCA9534A at `IOEXPANDER_ADDRESS` (CH1 → P0 … CH8 → P7) | Uses the address tables above (`0x20–0x27` / `0x38–0x3F`). |
+| `out_channel` = N, `OUT_SOURCE = "gpio"` | **OUT** (the DI value) | The **Nth defined Tasmota switch** (packed order) | If your template has gaps (e.g. `SWITCH1` + `SWITCH3`), number by position in the defined list, not absolute switch number. |
+
+### Example (IoTextra Quadro, two sampled channels)
+
+```berry
+var ISO1211_CHANNELS = [
+  {"name": "ISO1211_CH1", "fgnd_relay": 3, "out_channel": 1, "invert": false},
+  {"name": "ISO1211_CH2", "fgnd_relay": 4, "out_channel": 2, "invert": false}
+]
+```
+
+| Logical channel | FGND (`fgnd_relay`) | OUT (`out_channel`, `i2c`) | OUT (`out_channel`, `gpio`) |
+|---|---|---|---|
+| `ISO1211_CH1` | Relay 3 → HOST pin (template) | TCA9534 `P0` | 1st defined switch |
+| `ISO1211_CH2` | Relay 4 → HOST pin (template) | TCA9534 `P1` | 2nd defined switch |
+
+> **I²C driver note:** when `OUT_SOURCE = "i2c"`, the same expander rules apply as for `TCA9534.be` — disable the conflicting built-in driver with `I2cDriver36 0` so the address (e.g. `0x27`) is free for the Berry driver.
+
+> 📖 See [`/Documentation/Berry Drivers.md`](./Berry%20Drivers.md) and [`/Documentation/Setup.md`](./Setup.md) for full configuration, polarity, and safety details.

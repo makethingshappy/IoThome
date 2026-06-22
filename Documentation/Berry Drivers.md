@@ -28,6 +28,14 @@ Berry drivers for the ADS1115 analog ADC and TCA9534/TCA9534A digital I/O expand
   - [Controlling Outputs](#controlling-outputs)
   - [Reading Inputs](#reading-inputs)
   - [Output Format](#tca9534-output-format)
+- [ISO1211 Sampled-Mode Digital Input Driver](#iso1211-sampled-mode-digital-input-driver)
+  - [What It Does](#what-it-does-3)
+  - [Direct vs Sampled Mode](#direct-vs-sampled-mode)
+  - [Configuration](#iso1211-configuration)
+  - [Per-Channel Parameters](#per-channel-parameters)
+  - [Scan Sequence & Timing](#scan-sequence--timing)
+  - [Startup Safety](#startup-safety)
+  - [Output Format](#iso1211-output-format)
 - [I²C Address Reference](#ic-address-reference)
 - [Installation](#installation)
 
@@ -377,6 +385,137 @@ P3 (CH4) IN     LOW
 
 ---
 
+## ISO1211 Sampled-Mode Digital Input Driver
+
+> Driver file: `Berry_Drivers/ISO1211.be` · Target: **IoTextra Quadro** ISO1211 channels.
+
+### What It Does
+
+Implements the **sampled-mode** scan sequence for ISO1211 digital input channels. On the IoTextra Quadro, each ISO1211 channel can be wired for high input voltages (90V DC, 110V AC, 220V AC) with the `JM` jumper **open**. In this mode the chip's field-side ground (`FGND`) is not hardwired — it is switched by a HOST connector pin through a `TLP188` optocoupler.
+
+To take a reading the driver:
+
+1. Asserts the channel's FGND output (TLP188 ON), connecting FGND.
+2. Waits `t_settle = 25 ms` for the input circuit to settle (non-blocking).
+3. Reads the ISO1211 `OUT` pin to obtain the digital input (DI) value.
+4. De-asserts the FGND output (TLP188 OFF) so the channel idles and dissipates no power.
+
+Channels are scanned **one at a time** (round-robin), so only a single FGND is ever asserted, which keeps average power dissipation low and is friendly to AC-mains inputs.
+
+Each sampled-mode ISO1211 channel uses two things:
+
+- **FGND switching — GPIO only.** The TLP188/FGND is *always* driven by a Tasmota relay (`set_power`), i.e. a HOST connector pin assigned as a `Relay` in your template. FGND is **never** routed through the I²C expander. This is the parameter unique to sampled mode.
+- **OUT reading.** *How* the OUT pin is read is set globally by `OUT_SOURCE`, mirroring `TCA9534.be`: `"i2c"` reads a TCA9534/TCA9534A input register, `"gpio"` reads a Tasmota template switch (`get_switch`).
+
+---
+
+### Direct vs Sampled Mode
+
+| Mode | Voltage range | `JM` jumper | FGND | Driver |
+|---|---|:---:|---|---|
+| **Direct** | 12–60V DC | Closed | Hardwired to ground | Existing DI driver (e.g. `TCA9534.be`) — *no change* |
+| **Sampled** | 90V DC, 110V AC, 220V AC | Open | Switched by a GPIO relay (TLP188) | **`ISO1211.be`** (this driver) |
+
+The mode is determined purely by the physical `JM` jumper. You do **not** configure it in software — selecting an ISO1211 sampled-mode channel here implies the jumper is open. Direct-mode channels must **not** be added to this driver.
+
+---
+
+### ISO1211 Configuration
+
+The top of `ISO1211.be` sets how OUT is read (FGND is always GPIO), the expander address, the settle time, and a channel list:
+
+```berry
+var OUT_SOURCE         = "i2c"    # how OUT is read: "i2c" (TCA9534) or "gpio" (Tasmota switch)
+var IOEXPANDER_ADDRESS = 0x27     # TCA9534 0x20-0x27 / TCA9534A 0x38-0x3F (only when OUT_SOURCE = i2c)
+var OUT_INVERT         = false    # optional EXTRA flip of the final DI; default false = standard IoTextra/TCA9534 convention
+var ISO1211_T_SETTLE   = 25       # settle time per measurement (ms)
+```
+
+| Variable | What It Controls | Notes |
+|---|---|---|
+| `OUT_SOURCE` | **How the OUT pin is read** (FGND is unaffected — always GPIO) | `"i2c"` = TCA9534 input register; `"gpio"` = Tasmota template switch (`get_switch`). Mirrors `TCA9534.be`. |
+| `IOEXPANDER_ADDRESS` | I²C address of the TCA9534/TCA9534A | Only used when `OUT_SOURCE == "i2c"`. `0x20`–`0x27` or `0x38`–`0x3F`. |
+| `OUT_INVERT` | **Optional extra DI inversion** | The driver already applies the standard IoTextra convention per source (i2c: active-low like `TCA9534.be`; gpio: `get_switch()` logical state, `true` = `PRESSED` → `DI 1`). `OUT_INVERT` is an *extra* flip on top, only for boards wired opposite. `false` (default) = standard convention; `true` = flip. Override per channel with an `invert` key. |
+| `ISO1211_T_SETTLE` | Settle time between asserting FGND and reading OUT | `25 ms` is the universal value for all sampled ranges. Decrease only if you understand the thermal trade-offs. |
+
+Channels are defined in the `ISO1211_CHANNELS` list — each entry pairs a GPIO **FGND relay** with an **OUT channel** (and may optionally override polarity):
+
+```berry
+var ISO1211_CHANNELS = [
+  {"name": "ISO1211_CH1", "fgnd_relay": 3, "out_channel": 1, "invert": false},
+  {"name": "ISO1211_CH2", "fgnd_relay": 4, "out_channel": 2, "invert": false}  # set "invert": true only if this channel reads reversed
+]
+```
+
+---
+
+### Per-Channel Parameters
+
+| Parameter | Required | Type | Description |
+|---|:---:|---|---|
+| `name` | optional | string | Friendly label used in MQTT / web output. |
+| `fgnd_relay` | **yes** | int `≥ 1` | Tasmota **relay** number (1-based) that drives the TLP188 / FGND for this channel via `set_power`. **GPIO only** — assign the HOST connector pin as a `Relay` in your template. This is the parameter unique to sampled mode. |
+| `out_channel` | **yes** | int `≥ 1` | The channel that reads the ISO1211 `OUT` pin (the DI value). Meaning depends on `OUT_SOURCE` (see below). |
+| `invert` | optional | bool | Optional **extra** inversion of the final DI for this channel. Defaults to `OUT_INVERT` (`false`). Leave at the default unless this channel reads reversed. |
+
+How the channel numbers map:
+
+- **FGND (`fgnd_relay`)** → always a Tasmota relay: `fgnd_relay = 1` → `Relay1` / `Power1`, etc. FGND never uses the I²C expander.
+- **OUT with `OUT_SOURCE = "i2c"`** → `P0`–`P7` on the expander (`out_channel` 1 = P0 … 8 = P7). The expander is read-only here, so the driver configures all its pins as inputs.
+- **OUT with `OUT_SOURCE = "gpio"`** → read via `tasmota.get_switch()` (returns `true` = `PRESSED`, the logical state). Like `TCA9534.be`, this is **not inverted** by the driver, so `true` (PRESSED) → `DI 1` (HIGH). `out_channel` is the **position in the packed switch list** (1 = first *defined* switch). If your template has holes (e.g. `SWITCH1` + `SWITCH3`), the list skips the gap, so number by position, not absolute switch number. To flip polarity here, invert the switch in the Tasmota template (`Switch_n_i` / `SwitchMode`) rather than using `OUT_INVERT`.
+
+> **Validation:** A channel with a missing/invalid `fgnd_relay` (`< 1`) or `out_channel` (`< 1`, or `> 8` in i2c mode) is **rejected** with a descriptive console message and skipped. In `"i2c"` mode, if the expander is not found at `IOEXPANDER_ADDRESS` a single warning is printed and OUT reads return errors per channel.
+
+---
+
+### Scan Sequence & Timing
+
+The whole sequence is **non-blocking** — the `t_settle` wait uses `tasmota.set_timer()`, never a blocking delay. The driver's `every_second()` hook starts a round; each channel chains to the next only after its own FGND pulse completes:
+
+```
+assert FGND relay ──▶ wait t_settle (set_timer) ──▶ read OUT ──▶ de-assert FGND relay ──▶ next channel
+```
+
+> **Timing resolution:** `tasmota.set_timer` fires on the next ~50 ms tick, so a `t_settle` below 50 ms rounds **up** — the actual FGND-on time is ~50 ms (you'll see ~46–49 ms pulses in the console). This is harmless: a longer settle only improves reading reliability, and the duty cycle stays tiny (~50 ms on per ~1 s scan). Hitting exactly 25 ms would require blocking, which the spec forbids (*"no blocking sleep in the main execution context"*), so `set_timer` is the correct tool.
+
+You can also trigger a single on-demand measurement from the Berry console:
+
+```berry
+iso1211.measure(1)   # pulse + read channel 1 only (1-based)
+```
+
+---
+
+### Startup Safety
+
+> **Critical:** At power-on the HOST connector pins are undefined. If an FGND control were left floating, a TLP188 could conduct and power the ISO1211 at full field voltage (up to 220V AC) before any measurement — causing immediate overheating.
+
+To prevent this, the first **hardware** action in `init()` — before the OUT/I²C backend is even brought up — is to de-assert **every** `fgnd_relay` (TLP188 OFF) via `set_power(relay, false)`. (Channel-list validation runs first, but it performs no hardware I/O.) Because FGND is GPIO-only, this happens regardless of `OUT_SOURCE`.
+
+> **Polarity:** `set_power(relay, true)` asserts FGND (TLP188 ON). If your board's TLP188 drive is inverted, flip it in the Tasmota template (`Relay_i_INV`) or in hardware — don't change the driver.
+
+---
+
+### ISO1211 Output Format
+
+**Web UI:**
+```
+ISO1211_CH1 DI    HIGH
+ISO1211_CH2 DI    LOW
+```
+
+**MQTT (`stat/<topic>/RESULT`, published each scan round) and telemetry (`tele/<topic>/SENSOR`):**
+```json
+"ISO1211": {
+  "ISO1211_CH1": { "DI": 1, "error": false },
+  "ISO1211_CH2": { "DI": 0, "error": false }
+}
+```
+
+A channel reports `"DI": null` when its value is not yet known or a read failed. `"error"` is a **read-validity** flag, not a field/wiring fault: it is `true` only when the OUT read itself could not complete — e.g. the TCA9534 was not found / an I²C read NACKed (i2c mode), or `out_channel` points past the number of defined switches (gpio mode). `"error": false` means the read succeeded, so a `DI` of `0` with nothing connected is a valid, trusted reading.
+
+---
+
 ## I²C Address Reference
 
 ### TCA9534 (0x20 – 0x27)
@@ -426,13 +565,14 @@ TCA9534 and TCA9534A are pin-compatible and can coexist on the same I²C bus bec
 
 ## Installation
 
-1. Copy `ADS1115Data.be` and/or `TCA9534.be` to your Tasmota file system via **Consoles → Manage File System**.
+1. Copy `ADS1115Data.be`, `TCA9534.be`, and/or `ISO1211.be` to your Tasmota file system via **Consoles → Manage File System**.
 2. Edit the configuration variables at the top of each file to match your hardware.
 3. Add an `autoexec.be` (or append to an existing one) to load the drivers on boot:
 
 ```berry
 load('ADS1115Data.be')
 load('TCA9534.be')
+load('ISO1211.be')   # only for IoTextra Quadro sampled-mode ISO1211 channels
 ```
 
 4. Restart Tasmota. The drivers register themselves automatically and begin publishing sensor data.
