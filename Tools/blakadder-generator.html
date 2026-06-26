@@ -260,7 +260,10 @@ async function generate() {
   try {
     const skuMd = await ghRaw(ORG + '/' + repo + '/main/' + module + '/SKU.md');
     const productName = skuMd.split('\n').find(l => l.trim()).trim().replace(/^#+\s*/, '').replace(/^SKU\s*\u2014\s*/i, '');
-
+    const codeMatch = skuMd.match(/`([0-9]{6})[a-z]+`/);
+    const productCode = codeMatch ? codeMatch[1] : '';
+    const versionCode = version.replace('v.', '').replace('.', '');
+    const gLink = productCode ? 'https://makethingshappy.io/g' + productCode + versionCode : '';
     const mediaItems = await ghAPI('repos/' + ORG + '/' + repo + '/contents/' + module + '/' + version + '/media');
     const photoFile = mediaItems
       .filter(i => i.type === 'file' && !i.name.startsWith('placeholder'))
@@ -289,7 +292,7 @@ category: other
 type: ${typeSuffix} Expansion Module
 standard: global
 link: https://makethingshappy.io/products/${linkSlug}
-mlink: https://github.com/${ORG}/${repo}/tree/main/${module}
+mlink: ${gLink}
 image: /assets/device_images/${filenameSugg}.webp
 template: '${tasmotaJson || 'NOT FOUND — check IoThome repo'}'
 ---`;
