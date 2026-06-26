@@ -168,7 +168,7 @@ function setStatus(msg, state) {
 async function loadTable() {
   try {
     const md = await ghRaw(IOTHOME + '/main/Tasmota_Templates/README.md');
-    const m = md.match(/IOTEXTRA_TASMOTA_COMPATIBILITY_START-->([\s\S]*?)<!--\s*IOTEXTRA_TASMOTA_COMPATIBILITY_END/);
+    const m = md.match(/IOTEXTRA_TASMOTA_COMPATIBILITY_START -->([\s\S]*?)<!--\s*IOTEXTRA_TASMOTA_COMPATIBILITY_END/);
     if (!m) throw new Error('Compatibility section not found');
 
     const lines = m[1].split('\n').filter(l => l.trim().startsWith('|'));
