@@ -260,7 +260,7 @@ async function generate() {
   try {
     const skuMd = await ghRaw(ORG + '/' + repo + '/main/' + module + '/SKU.md');
     const productName = skuMd.split('\n').find(l => l.trim()).trim().replace(/^#+\s*/, '').replace(/^SKU\s*\u2014\s*/i, '');
-    const codeMatch = skuMd.match(/`([0-9]{6})[a-z]+`/);
+    const codeMatch = skuMd.match(/([0-9]{6})[a-z]+/);
     const productCode = codeMatch ? codeMatch[1] : '';
     const versionCode = version.replace('v.', '').replace('.', '');
     const gLink = productCode ? 'https://makethingshappy.io/g' + productCode + versionCode : '';
