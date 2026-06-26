@@ -259,7 +259,7 @@ async function generate() {
 
   try {
     const skuMd = await ghRaw(ORG + '/' + repo + '/main/' + module + '/SKU.md');
-    const productName = skuMd.split('\n').find(l => l.trim()).trim().replace(/^#+\s*/, '');
+    const productName = skuMd.split('\n').find(l => l.trim()).trim().replace(/^#+\s*/, '').replace(/^SKU\s*[—–-]+\s*/i, '');
 
     const mediaItems = await ghAPI('repos/' + ORG + '/' + repo + '/contents/' + module + '/' + version + '/media');
     const photoFile = mediaItems
