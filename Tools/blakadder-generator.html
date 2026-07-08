@@ -234,7 +234,7 @@ async function onSelect(btn, module, platform, pfFile) {
     const repo = MODULE_REPO[module];
     const items = await ghAPI('repos/' + ORG + '/' + repo + '/contents/' + module);
     const versions = items
-      .filter(i => i.type === 'dir' && i.name.startsWith('v.'))
+      .filter(i => i.type === 'dir' && i.name.startsWith('v'))
       .map(i => i.name).sort().reverse();
     if (!versions.length) { vsel.innerHTML = '<option>No versions found</option>'; return; }
     vsel.innerHTML = versions.map(v => `<option value="${v}">${v}</option>`).join('');
