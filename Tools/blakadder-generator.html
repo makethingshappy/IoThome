@@ -262,7 +262,7 @@ async function generate() {
     const productName = skuMd.split('\n').find(l => l.trim()).trim().replace(/^#+\s*/, '').replace(/^SKU\s*\u2014\s*/i, '');
     const codeMatch = skuMd.match(/\n([0-9]{6})/);
     const productCode = codeMatch ? codeMatch[1] : '';
-    const versionCode = version.replace('v.', '').replace('.', '');
+    const versionCode = version.replace(/^v\.?/, '').replace('.', '');
     const gLink = productCode ? 'https://makethingshappy.io/g' + productCode + versionCode : '';
     const mediaItems = await ghAPI('repos/' + ORG + '/' + repo + '/contents/' + module + '/' + version + '/media');
     const photoFile = mediaItems
