@@ -31,7 +31,7 @@ SOFTWARE.
  -     (2 physical TCA pins per relay = IN1/IN2 H-bridge pair;
  -     all 8 TCA pins are outputs; CONFIG is always 0x00)
  -   * 4 input channels on host MCU GPIO (Tasmota Switches), NOT on the TCA
- -   * optional nSLEEP via a Tasmota template Relay
+ -   * optional nSLEEP via direct Berry gpio.digital_write (physical GPIO)
  -
  - PIN_CONFIG describes the LOGICAL channel map (which of CH1-8 is an
  - input vs output). It does NOT describe TCA9534 pin directions.
@@ -43,7 +43,9 @@ SOFTWARE.
  - idle 0x00 after each pulse. (Not the PWM gpio.set_pwm cookbook path.)
  -
  - Template expectation (default map):
- -   I2C SDA/SCL, Switch1..4 for CH5..CH8 inputs, Relay1 for nSLEEP
+ -   I2C SDA/SCL, Switch1..4 for CH5..CH8 inputs.
+ -   Leave nSLEEP GPIO unassigned in the template (or None) so Berry owns it;
+ -   do NOT assign it as Relay1 - that fights with gpio.digital_write.
  - ================================================================== -#
 
 #- =========================================================
@@ -61,24 +63,26 @@ SOFTWARE.
 var IOEXPANDER_ADDRESS = 0x27   #- TCA9534 0x20-0x27 / TCA9534A 0x38-0x3F -#
 
 #- Logical channel map: 0=output, 1=input, MSB=P7..LSB=P0 (string form).
- - Default: CH1-4 latching outputs, CH5-8 host GPIO inputs. -#
-var PIN_CONFIG = "00001111"
+ - "11110000" => CH1-4 out (P0-P3=0), CH5-8 in (P4-P7=1). -#
+var PIN_CONFIG = "11110000"
 
 #- Logical channels that are latching relay outputs (1-based CH1..CH8).
  - Sorted ascending and mapped to physical pairs (IN1,IN2):
  -   pair0=(1,0) pair1=(3,2) pair2=(5,4) pair3=(7,6) -#
 var OCTAL3_CHANNELS = [1, 2, 3, 4]
 
-#- 1-based Tasmota Relay number that drives nSLEEP, or nil to skip. -#
-var NSLEEP_RELAY = 1
+#- Physical GPIO for nSLEEP (HIGH=awake, LOW=sleep), or nil to skip.
+ - Default GPIO5 matches IoTextra Octal3 HOST wiring.
+ - Clear Relay1 (etc.) off this pin in the Tasmota template so Berry owns it. -#
+var NSLEEP_GPIO = 5
 
 #- Latching coil pulse width (ms). Keep <= 10; Berry must not block long. -#
 var PULSE_MS = 5
 
 #- Logical input channel (1-based) -> Tasmota Switch number (1-based).
- - Default matches PIN_CONFIG "00001111" (CH5-8 inputs on Switch1-4).
+ - Default matches PIN_CONFIG "11110000" (CH5-8 inputs on Switch1-4).
  - Alternate example (CH1-4 in / CH5-8 out):
- -   PIN_CONFIG = "11110000"
+ -   PIN_CONFIG = "00001111"
  -   OCTAL3_CHANNELS = [5, 6, 7, 8]
  -   INPUT_SWITCHES = {1:1, 2:2, 3:3, 4:4} -#
 var INPUT_SWITCHES = {5:1, 6:2, 7:3, 8:4}
@@ -100,7 +104,7 @@ class Octal3 : Driver
   var i2cAddress
   var pinConfig         #- logical bitmask: bit i = CH(i+1), 1=input 0=output -#
   var pulse_ms
-  var nsleep_relay      #- 1-based Relay number, or nil -#
+  var nsleep_gpio       #- physical GPIO number, or nil -#
   var pulsing           #- exclusive pulse lock -#
 
   var octal3_channels   #- list of latching output channel numbers -#
@@ -109,10 +113,10 @@ class Octal3 : Driver
   var input_switches    #- map logical CH -> Switch number -#
   var switch_index_map  #- Switch number -> packed index in get_switches() -#
 
-  def init(i2cAddress, pinConfig, octal3_channels, nsleep_relay, pulse_ms, input_switches)
+  def init(i2cAddress, pinConfig, octal3_channels, nsleep_gpio, pulse_ms, input_switches)
     self.i2cAddress = i2cAddress
     self.pulse_ms = pulse_ms != nil ? pulse_ms : 5
-    self.nsleep_relay = nsleep_relay
+    self.nsleep_gpio = nsleep_gpio
     self.pulsing = false
     self.input_switches = input_switches != nil ? input_switches : {}
 
@@ -191,12 +195,16 @@ class Octal3 : Driver
       print(string.format("Octal3: TCA9534 not found at 0x%02X", self.i2cAddress))
     end
 
-    #- Start with drivers asleep. -#
-    self._set_nsleep(false)
+    #- nSLEEP: claim physical GPIO as output, start asleep (LOW). -#
+    if self.nsleep_gpio != nil
+      gpio.pin_mode(self.nsleep_gpio, gpio.OUTPUT)
+      self._set_nsleep(false)
+      print(string.format("Octal3: nSLEEP on GPIO%i (direct gpio, start asleep)", self.nsleep_gpio))
+    end
 
-    print(string.format("Octal3: ready - %i latching out, logical pinConfig=0x%02X, pulse=%ims, nSLEEP relay=%s",
+    print(string.format("Octal3: ready - %i latching out, logical pinConfig=0x%02X, pulse=%ims, nSLEEP GPIO=%s",
                          size(self.relay_pins), self.pinConfig, self.pulse_ms,
-                         self.nsleep_relay != nil ? str(self.nsleep_relay) : "none"))
+                         self.nsleep_gpio != nil ? str(self.nsleep_gpio) : "none"))
   end
 
   #- Ascending copy of a channel list (small N). -#
@@ -223,10 +231,10 @@ class Octal3 : Driver
     return sorted
   end
 
-  #- nSLEEP via template Relay (1-based). true = awake, false = sleep. -#
+  #- nSLEEP via direct gpio. true = awake (HIGH), false = sleep (LOW). -#
   def _set_nsleep(awake)
-    if self.nsleep_relay == nil return end
-    tasmota.set_power(self.nsleep_relay - 1, awake)
+    if self.nsleep_gpio == nil return end
+    gpio.digital_write(self.nsleep_gpio, awake ? gpio.HIGH : gpio.LOW)
   end
 
   #- Write one byte to the TCA9534 output port register. -#
@@ -408,5 +416,5 @@ class Octal3 : Driver
 end
 
 global.octal3 = Octal3(IOEXPANDER_ADDRESS, PIN_CONFIG, OCTAL3_CHANNELS,
-                       NSLEEP_RELAY, PULSE_MS, INPUT_SWITCHES)
+                       NSLEEP_GPIO, PULSE_MS, INPUT_SWITCHES)
 tasmota.add_driver(global.octal3)

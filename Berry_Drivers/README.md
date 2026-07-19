@@ -32,7 +32,7 @@ All drivers are under active development and may change frequently.
 - Hybrid driver for IoTextra Octal3
 - 4 latching relay outputs via `TCA9534` I2C H-bridge pin-pairs (CONFIG always all-output)
 - 4 host MCU GPIO inputs via Tasmota template Switches (not on the TCA)
-- Optional nSLEEP via a template Relay; software state mirror (no I2C readback)
+- Optional nSLEEP via direct Berry `gpio.digital_write` (default GPIO5); software state mirror (no I2C readback)
 - Configurable logical channel map (default CH1–4 out / CH5–8 in)
 
 ---
