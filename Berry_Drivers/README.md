@@ -28,7 +28,7 @@ All drivers are under active development and may change frequently.
 
 ---
 
-### Octal3.be (<!> Under Development <!>)
+### Octal3.be
 - Hybrid driver for IoTextra Octal3
 - 4 latching relay outputs via `TCA9534` I2C H-bridge pin-pairs (CONFIG always all-output)
 - 4 host MCU GPIO inputs via Tasmota template Switches (not on the TCA)
