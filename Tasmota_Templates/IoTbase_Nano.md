@@ -39,6 +39,10 @@ Tasmota templates for IoTextra mezzanine modules used with the **IoTbase Nano** 
 ```json
 {"NAME":"IoTextra Octal2","GPIO":[1,1,258,257,256,259,1,1,1,160,161,640,608,1,1,1,1,162,163,1,1,1,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1],"FLAG":0,"BASE":1}
 ```
+### IoTextra Octal3
+```json
+{"NAME":"IoTextra Octal3","GPIO":[1,1,1,256,1,1,1,1,1,160,161,640,608,1,1,1,1,162,163,1,1,1,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1],"FLAG":0,"BASE":1}
+```
 ### IoTextra Analog
 ```json
 {"NAME":"IoTextra Analog","GPIO":[1,1,1,1,1,1,1,1,1,1,1,640,608,1,1,1,1,1,1,1,1,1,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1],"FLAG":0,"BASE":1}
