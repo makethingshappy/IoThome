@@ -28,6 +28,15 @@ All drivers are under active development and may change frequently.
 
 ---
 
+### Octal3.be
+- Hybrid driver for IoTextra Octal3
+- 4 latching relay outputs via `TCA9534` I2C H-bridge pin-pairs (CONFIG always all-output)
+- 4 host MCU GPIO inputs via Tasmota template Switches (not on the TCA)
+- Optional nSLEEP via direct Berry `gpio.digital_write` (default GPIO5); software state mirror (no I2C readback)
+- Configurable logical channel map (default CH1–4 out / CH5–8 in)
+
+---
+
 ### ISO1211.be
 - Sampled-mode digital input driver for `ISO1211` channels
 - Pulses FGND (TLP188) per measurement with `t_settle = 25 ms`, non-blocking
