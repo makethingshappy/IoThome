@@ -9,6 +9,7 @@ Tasmota templates for IoTextra mezzanine modules used with the **IoTbase Nano** 
 | MOSFET2          | ✅ Available    |
 | Octal            | ✅ Available    |
 | Octal2           | ✅ Available    |
+| Octal3           | ✅ Available    |
 | Analog           | ✅ Available    |
 | Analog2          | 🔲 Planned      |
 | Analog3          | ✅ Available    |
