@@ -59,5 +59,5 @@ Tasmota templates for IoTextra mezzanine modules used with the **IoTsmart ESP32-
 ```
 ### IoTextra Combo
 ```json
-{"NAME":"IoTextra Combo","GPIO":[1,1,1,1,256,257,258,259,1,1,1,1,1,1,1,608,640,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"FLAG":0,"BASE":1}
+{"NAME":"IoTextra Combo","GPIO":[1,1,1,1,1,1,1,1,257,256,1,1,1,1,1,608,640,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"FLAG":0,"BASE":1}
 ```
