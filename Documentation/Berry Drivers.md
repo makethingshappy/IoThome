@@ -409,14 +409,14 @@ Do **not** load `TCA9534.be` against this expander. Those pins are not static GP
 
 ```berry
 var IOEXPANDER_ADDRESS = 0x3F
-var NSLEEP_GPIO        = 9
+var NSLEEP_GPIO        = 5
 var PULSE_MS           = 5
 ```
 
 | Variable | What it controls | Valid values |
 |---|---|---|
 | `IOEXPANDER_ADDRESS` | TCA9534/TCA9534A address | `0x20`–`0x27` or `0x38`–`0x3F`. Default `0x3F` = TCA9534A with SB1/SB2/SB3 open |
-| `NSLEEP_GPIO` | Physical ESP GPIO for HOST AP5, or `nil` to skip | IoTsmart ESP32-S3: **9**. IoTbase Nano: **3** |
+| `NSLEEP_GPIO` | Physical ESP GPIO for HOST AP5, or `nil` to skip | IoTsmart ESP32-S3: **5** |
 | `PULSE_MS` | Latching coil pulse width | Keep `<= 10` |
 
 Disable the conflicting built-in I²C driver: `I2cDriver36 0`.

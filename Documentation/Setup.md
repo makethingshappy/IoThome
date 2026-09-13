@@ -364,7 +364,7 @@ var HARDWARE_MODE        = "i2c"       # "i2c" or "gpio"
 
 ```berry
 var IOEXPANDER_ADDRESS = 0x3F   # TCA9534A default: SB1/SB2/SB3 open (A2=A1=A0=1)
-var NSLEEP_GPIO        = 9      # HOST AP5 on IoTsmart ESP32-S3; Nano AP5 is GPIO3
+var NSLEEP_GPIO        = 5      # HOST AP5 on IoTsmart ESP32-S3;
 var PULSE_MS           = 5      # latching coil pulse width (keep <= 10)
 ```
 
