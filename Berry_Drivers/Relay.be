@@ -62,13 +62,12 @@ SOFTWARE.
 #- Default matches IoTextra Relay 3-02 stuffed with TCA9534A and
  - SB1/SB2/SB3 open (A2=A1=A0=1) -> 0x3F.
  - TCA9534:  0x20..0x27   TCA9534A: 0x38..0x3F -#
-var IOEXPANDER_ADDRESS = 0x3F
+var IOEXPANDER_ADDRESS = 0x27
 
 #- Physical GPIO for nSLEEP (HIGH=awake, LOW=sleep), or nil to skip.
- - Default GPIO9 = HOST AP5 on IoTsmart ESP32-S3.
- - IoTbase Nano AP5 is GPIO3 — change this if you are not on IoTsmart.
+ - Default GPIO5 = HOST AP5 on IoTsmart ESP32-S3.
  - Clear that pin off Relays in the Tasmota template so Berry owns it. -#
-var NSLEEP_GPIO = 9
+var NSLEEP_GPIO = 5
 
 #- Latching coil pulse width (ms). Keep <= 10; Berry must not block long. -#
 var PULSE_MS = 5
