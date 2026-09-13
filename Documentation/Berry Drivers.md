@@ -28,6 +28,12 @@ Berry drivers for the ADS1115 analog ADC and TCA9534/TCA9534A digital I/O expand
   - [Controlling Outputs](#controlling-outputs)
   - [Reading Inputs](#reading-inputs)
   - [Output Format](#tca9534-output-format)
+- [IoTextra Relay Driver](#iotextra-relay-driver)
+  - [What It Does](#what-it-does-relay)
+  - [Configuration](#relay-configuration)
+  - [Channel Map](#relay-channel-map)
+  - [Controlling Outputs](#relay-controlling-outputs)
+  - [Output Format](#relay-output-format)
 - [ISO1211 Sampled-Mode Digital Input Driver](#iso1211-sampled-mode-digital-input-driver)
   - [What It Does](#what-it-does-3)
   - [Direct vs Sampled Mode](#direct-vs-sampled-mode)
@@ -278,7 +284,7 @@ var HARDWARE_MODE        = "i2c"
 |---|:---:|---|
 | IoTextra Relay2 | `"11110000"` | P4–P7 inputs, P0–P3 outputs (check schematic — P4–P7 may be unused) |
 | IoTextra Input | `"11111111"` | All 8 pins as inputs |
-| IoTextra Octal | `"00001111"` | P0–P3 outputs, P4–P7 inputs |
+| IoTextra Octal/Octal4 | `"00001111"` | P0–P3 outputs, P4–P7 inputs |
 | IoTextra Combo | `"xxxxxx00"` | P0–P1 outputs, P2–P7 unused/output |
 
 **Bit order visualised:**
@@ -380,6 +386,77 @@ P3 (CH4) IN     LOW
   "P1_OUT": 0,
   "P2_IN":  1,
   "P3_IN":  0
+}
+```
+
+---
+
+## IoTextra Relay Driver
+
+> Driver file: `Berry_Drivers/Relay.be` · Target: **IoTextra Relay** (4 SPST + 4 latching). Not for Relay2.
+
+### What It Does
+
+Drives the hybrid IoTextra Relay board:
+
+- **RS1–RS4** — non-latching SPST relays on HOST **AP0–AP3**, mapped as Tasmota Relay1–4 (`set_power`). Active-high.
+- **RL1–RL4** — latching relays on the on-board TCA9534/TCA9534A. Each relay is an IN1/IN2 H-bridge pair. The driver pulses one leg, then returns the port to idle `0x00`.
+- **nSLEEP** — shared DRV8837C sleep pin on HOST **AP5**, driven directly by Berry. Left **User/None** in the template so Tasmota does not fight Berry.
+
+Do **not** load `TCA9534.be` against this expander. Those pins are not static GPIO outputs; holding IN1 or IN2 can overheat the latching coils.
+
+### Relay Configuration
+
+```berry
+var IOEXPANDER_ADDRESS = 0x3F
+var NSLEEP_GPIO        = 9
+var PULSE_MS           = 5
+```
+
+| Variable | What it controls | Valid values |
+|---|---|---|
+| `IOEXPANDER_ADDRESS` | TCA9534/TCA9534A address | `0x20`–`0x27` or `0x38`–`0x3F`. Default `0x3F` = TCA9534A with SB1/SB2/SB3 open |
+| `NSLEEP_GPIO` | Physical ESP GPIO for HOST AP5, or `nil` to skip | IoTsmart ESP32-S3: **9**. IoTbase Nano: **3** |
+| `PULSE_MS` | Latching coil pulse width | Keep `<= 10` |
+
+Disable the conflicting built-in I²C driver: `I2cDriver36 0`.
+
+### Relay Channel Map
+
+| Channel | Hardware | Drive path |
+|:-------:|----------|------------|
+| 1–4 | RS1–RS4 | Tasmota Relay1–4 on AP0–AP3 |
+| 5–8 | RL1–RL4 | TCA pairs `(P1,P0)` `(P3,P2)` `(P5,P4)` `(P7,P6)` |
+
+Latching SET = IN1 high / IN2 low; RESET = IN1 low / IN2 high. There is no contact readback; RL state is a software mirror.
+
+### Relay Controlling Outputs
+
+```berry
+global.relay.set_output(1, true)      # RS1 ON
+global.relay.set_output(5, false)     # RL1 RESET
+global.relay.set_spst(2, true)        # RS2 ON
+global.relay.set_latching(3, true)    # RL3 SET
+```
+
+`load_states(bitmask)` / `states_bitmask()` cover **RL1–RL4 only** (bits 0–3). SPST state is owned by Tasmota Power. Restore the latching mirror after reboot without pulsing; persist from the caller the same way as Octal3.
+
+### Relay Output Format
+
+**Web UI:** `RS1`…`RS4` and `RL1`…`RL4` as ON/OFF.
+
+**Telemetry JSON:**
+
+```json
+"Relay": {
+  "RS1": 1,
+  "RS2": 0,
+  "RS3": 0,
+  "RS4": 0,
+  "RL1": 1,
+  "RL2": 0,
+  "RL3": 0,
+  "RL4": 0
 }
 ```
 
@@ -565,14 +642,17 @@ TCA9534 and TCA9534A are pin-compatible and can coexist on the same I²C bus bec
 
 ## Installation
 
-1. Copy `ADS1115Data.be`, `TCA9534.be`, and/or `ISO1211.be` to your Tasmota file system via **Consoles → Manage File System**.
+1. Copy `ADS1115Data.be`, `TCA9534.be`, `Relay.be`, and/or `ISO1211.be` to your Tasmota file system via **Consoles → Manage File System**.
 2. Edit the configuration variables at the top of each file to match your hardware.
 3. Add an `autoexec.be` (or append to an existing one) to load the drivers on boot:
 
 ```berry
 load('ADS1115Data.be')
+load('ADS7828.be')
 load('TCA9534.be')
+load('Relay.be')     # IoTextra Relay only — do not load with TCA9534.be
 load('ISO1211.be')   # only for IoTextra Quadro sampled-mode ISO1211 channels
+load('Octal3.be')    # Intended for IoTextra Octal3 board
 ```
 
 4. Restart Tasmota. The drivers register themselves automatically and begin publishing sensor data.

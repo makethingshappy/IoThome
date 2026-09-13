@@ -28,6 +28,16 @@ All drivers are under active development and may change frequently.
 
 ---
 
+### Relay.be
+- Hybrid driver for IoTextra Relay (not Relay2)
+- 4 SPST relays on HOST AP0–AP3 via Tasmota Relays (`set_power`)
+- 4 latching relays via `TCA9534A` I2C H-bridge pin-pairs (CONFIG always all-output)
+- nSLEEP on HOST AP5 via direct Berry `gpio.digital_write` (default GPIO9 on IoTsmart ESP32-S3)
+- Software state mirror for latching outputs (no I2C readback)
+- Do **not** use `TCA9534.be` on this board
+
+---
+
 ### Octal3.be
 - Hybrid driver for IoTextra Octal3
 - 4 latching relay outputs via `TCA9534` I2C H-bridge pin-pairs (CONFIG always all-output)

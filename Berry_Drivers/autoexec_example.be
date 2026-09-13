@@ -12,8 +12,18 @@
 load("ADS1115Data.be")
 #load("ADS7828.be") # uncommment and comment ADS1115Data.be if using IoTextra Analog 3 which uses ADS7828 ADC
 load("TCA9534.be")
+#load("Relay.be")   # uncomment and comment TCA9534.be if using IoTextra Relay (4 SPST + 4 I2C latching)
 #load("Octal3.be")  # uncommment and comment TCA9534.be if using IoTextra Octal3 (I2C latching relays + GPIO inputs)
 #load("ISO1211.be")
+
+# Example: restore Relay latching mirror after reboot (caller-owned persist; do not save every pulse)
+# import persist
+# if persist.has("relay_states")
+#   global.relay.load_states(persist.relay_states)
+# end
+# # after a successful set_latching / set_output(5-8) that returned true (state changed):
+# # persist.relay_states = global.relay.states_bitmask()
+# # persist.save()
 
 # Example: restore Octal3 latching mirror after reboot (caller-owned persist; do not save every pulse)
 # import persist
