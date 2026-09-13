@@ -21,11 +21,11 @@ Tasmota templates for IoTextra mezzanine modules used with the **IoTsmart ESP32-
 ## Templates
 ### IoTextra Input
 ```json
-{"NAME":"IoTextra Relay","GPIO":[1,1,1,1,1,1,1,1,256,257,258,259,1,1,1,608,640,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"FLAG":0,"BASE":1}
+{"NAME":"IoTextra Input","GPIO":[1,1,1,1,160,161,162,163,164,165,166,167,1,1,1,608,640,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"FLAG":0,"BASE":1}
 ```
 ### IoTextra Relay
 ```json
-{"NAME":"IoTextra Relay","GPIO":[1,1,1,1,256,257,258,259,1,1,1,1,1,1,1,608,640,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"FLAG":0,"BASE":1}
+{"NAME":"IoTextra Relay","GPIO":[1,1,1,1,1,1,1,1,256,257,258,259,1,1,1,608,640,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"FLAG":0,"BASE":1}
 ```
 ### IoTextra Relay2
 ```json
