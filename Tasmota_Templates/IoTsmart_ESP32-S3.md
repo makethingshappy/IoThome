@@ -10,6 +10,7 @@ Tasmota templates for IoTextra mezzanine modules used with the **IoTsmart ESP32-
 | Octal            | ✅ Available    |
 | Octal2           | ✅ Available    |
 | Octal3           | ✅ Available    |
+| Octal4           | ✅ Available    |
 | Quadro           | ✅ Available    |
 | Analog           | ✅ Available    |
 | Analog2          | 🔲 Planned      |
@@ -44,6 +45,10 @@ Tasmota templates for IoTextra mezzanine modules used with the **IoTsmart ESP32-
 ### IoTextra Octal3
 ```json
 {"NAME":"IoTextra Octal3","GPIO":[1,1,1,1,1,1,1,1,160,161,162,163,1,1,1,608,640,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],"FLAG":0,"BASE":1}
+```
+### IoTextra Octal4
+```json
+{"NAME":"IoTextra Octal4","GPIO":[1,1,1,1,256,257,258,259,160,161,162,163,1,1,1,608,640,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],"FLAG":0,"BASE":1}
 ```
 ### IoTextra Quadro
 ```json

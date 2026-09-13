@@ -72,7 +72,7 @@ var HARDWARE_MODE        = "i2c"  #- "i2c" or "gpio" -#
 # You can find the pin configuration of the module on the schematic of the IoTExtra board
 # IoTExtra Relay2 -> 0b11110000 ATTENTION: check the schematic (P4-P7 i.e. channels 5-8 are unused)
 # IoTExtra Input -> 0b11111111
-# IoTExtra Octal -> 0b00001111
+# IoTExtra Octal/Octal4 -> 0b00001111
 # IoTExtra Combo -> 0bxxxxxx00
 # IoTextra Quadro -> 0b11001111
 
