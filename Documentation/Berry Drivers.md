@@ -648,11 +648,11 @@ TCA9534 and TCA9534A are pin-compatible and can coexist on the same I²C bus bec
 
 ```berry
 load('ADS1115Data.be')
-load('ADS7828.be')
+#load('ADS7828.be')   # uncomment and comment ADS1115Data.be if using IoTextra Analog3 (ADS7828 ADC)
 load('TCA9534.be')
-load('Relay.be')     # IoTextra Relay only — do not load with TCA9534.be
-load('ISO1211.be')   # only for IoTextra Quadro sampled-mode ISO1211 channels
-load('Octal3.be')    # Intended for IoTextra Octal3 board
+#load('Relay.be')     # uncomment and comment TCA9534.be if using IoTextra Relay (4 SPST + 4 I2C latching); do not load with TCA9534.be
+#load('ISO1211.be')   # only for IoTextra Quadro sampled-mode ISO1211 channels
+#load('Octal3.be')    # uncomment and comment TCA9534.be if using IoTextra Octal3 (I2C latching relays + GPIO inputs)
 ```
 
 4. Restart Tasmota. The drivers register themselves automatically and begin publishing sensor data.
