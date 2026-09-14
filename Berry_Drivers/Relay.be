@@ -59,8 +59,8 @@ SOFTWARE.
  - User Configuration - change these to match your board
  - =========================================================== -#
 
-#- Default matches IoTextra Relay 3-02 stuffed with TCA9534A and
- - SB1/SB2/SB3 open (A2=A1=A0=1) -> 0x3F.
+#- Default matches IoTextra Relay 3-0x stuffed with TCA9534 and
+ - SB1/SB2/SB3 open (A2=A1=A0=1) -> 0x27.
  - TCA9534:  0x20..0x27   TCA9534A: 0x38..0x3F -#
 var IOEXPANDER_ADDRESS = 0x27
 
