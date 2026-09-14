@@ -139,7 +139,7 @@ Example:
 
 - IoTExtra Relay2 -> `11110000`
 - IoTExtra Input ->  `11111111`
-- IoTExtra Octal ->  `00001111`
+- IoTExtra Octal/Octal4 ->  `00001111`
 - IoTExtra Combo ->  `xxxxxx00`
 
 > **Note:** Reading is always available for all channel types, including OUTPUT channels (e.g. relays). Always check the schematic for exact pinout for each IoTextra Digital I/O series module.

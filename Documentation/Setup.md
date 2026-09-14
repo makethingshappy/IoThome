@@ -171,7 +171,7 @@ Tasmota needs to know which GPIO pins are connected to what. IoThome provides pr
 | IoTextra Module | IoTsmart ESP32-S3 | IoTsmart XIAO + XIAO ESP32-S3 | IoTbase PICO + Waveshare ESP32-S3-Pico | IoTbase NANO + Waveshare ESP32-S3-NANO | IoTbase Feather + Adafruit ESP32-C6 Feather |
 |---|:---:|:---:|:---:|:---:|:---:|
 | Input | [![Template](https://img.shields.io/badge/Template-green)](https://github.com/makethingshappy/IoThome/blob/main/Tasmota_Templates/IoTsmart_ESP32-S3.md#iotextra-input) | 🔶 | 🔶 | [![Template](https://img.shields.io/badge/Template-green)](https://github.com/makethingshappy/IoThome/blob/main/Tasmota_Templates/IoTbase_Nano.md#iotextra-input) | 🔶 |
-| Relay | 🔲 | 🔲 | 🔲 | 🔲 | 🔲 |
+| Relay | [![Template](https://img.shields.io/badge/Template-green)](https://github.com/makethingshappy/IoThome/blob/main/Tasmota_Templates/IoTsmart_ESP32-S3.md#iotextra-relay) | 🔲 | 🔲 | 🔲 | 🔲 |
 | Relay2 | [![Template](https://img.shields.io/badge/Template-green)](https://github.com/makethingshappy/IoThome/blob/main/Tasmota_Templates/IoTsmart_ESP32-S3.md#iotextra-relay2) | 🔶 | 🔶 | [![Template](https://img.shields.io/badge/Template-green)](https://github.com/makethingshappy/IoThome/blob/main/Tasmota_Templates/IoTbase_Nano.md#iotextra-relay2) | [![Template](https://img.shields.io/badge/Template-green)](https://github.com/makethingshappy/IoThome/blob/main/Tasmota_Templates/IoTbase_Feather.md#iotextra-relay2) |
 | SSR Small | [![Template](https://img.shields.io/badge/Template-green)](https://github.com/makethingshappy/IoThome/blob/main/Tasmota_Templates/IoTsmart_ESP32-S3.md#iotextra-ssr-small) | 🔶 | 🔶 | [![Template](https://img.shields.io/badge/Template-green)](https://github.com/makethingshappy/IoThome/blob/main/Tasmota_Templates/IoTbase_Nano.md#iotextra-ssr-small) | 🔶 |
 | MOSFET2 | [![Template](https://img.shields.io/badge/Template-green)](https://github.com/makethingshappy/IoThome/blob/main/Tasmota_Templates/IoTsmart_ESP32-S3.md#iotextra-mosfet2) | 🔶 | 🔶 | [![Template](https://img.shields.io/badge/Template-green)](https://github.com/makethingshappy/IoThome/blob/main/Tasmota_Templates/IoTbase_Nano.md#iotextra-mosfet2) | 🔶 |
@@ -179,6 +179,7 @@ Tasmota needs to know which GPIO pins are connected to what. IoThome provides pr
 | Octal | [![Template](https://img.shields.io/badge/Template-green)](https://github.com/makethingshappy/IoThome/blob/main/Tasmota_Templates/IoTsmart_ESP32-S3.md#iotextra-octal) | 🔶 | 🔶 | [![Template](https://img.shields.io/badge/Template-green)](https://github.com/makethingshappy/IoThome/blob/main/Tasmota_Templates/IoTbase_Nano.md#iotextra-octal) | [![Template](https://img.shields.io/badge/Template-green)](https://github.com/makethingshappy/IoThome/blob/main/Tasmota_Templates/IoTbase_Feather.md#iotextra-octal) |
 | Octal2 | [![Template](https://img.shields.io/badge/Template-green)](https://github.com/makethingshappy/IoThome/blob/main/Tasmota_Templates/IoTsmart_ESP32-S3.md#iotextra-octal2) | 🔶 | 🔶 | [![Template](https://img.shields.io/badge/Template-green)](https://github.com/makethingshappy/IoThome/blob/main/Tasmota_Templates/IoTbase_Nano.md#iotextra-octal2) | [![Template](https://img.shields.io/badge/Template-green)](https://github.com/makethingshappy/IoThome/blob/main/Tasmota_Templates/IoTbase_Feather.md#iotextra-octal2) |
 | Octal3 | [![Template](https://img.shields.io/badge/Template-green)](https://github.com/makethingshappy/IoThome/blob/main/Tasmota_Templates/IoTsmart_ESP32-S3.md#iotextra-octal3) | 🔲 | 🔲 | [![Template](https://img.shields.io/badge/Template-green)](https://github.com/makethingshappy/IoThome/blob/main/Tasmota_Templates/IoTbase_Nano.md#iotextra-octal3) | 🔲 |
+| Octal4 | [![Template](https://img.shields.io/badge/Template-green)](https://github.com/makethingshappy/IoThome/blob/main/Tasmota_Templates/IoTsmart_ESP32-S3.md#iotextra-octal4) | 🔲 | 🔲 | 🔲 | 🔲 |
 | Analog | [![Template](https://img.shields.io/badge/Template-green)](https://github.com/makethingshappy/IoThome/blob/main/Tasmota_Templates/IoTsmart_ESP32-S3.md#iotextra-analog) | 🔶 | 🔶 | [![Template](https://img.shields.io/badge/Template-green)](https://github.com/makethingshappy/IoThome/blob/main/Tasmota_Templates/IoTbase_Nano.md#iotextra-analog) | [![Template](https://img.shields.io/badge/Template-green)](https://github.com/makethingshappy/IoThome/blob/main/Tasmota_Templates/IoTbase_Feather.md#iotextra-analog) |
 | Analog2 | 🔲 | 🔲 | 🔲 | 🔲 | 🔲 |
 | Analog3 | [![Template](https://img.shields.io/badge/Template-green)](https://github.com/makethingshappy/IoThome/blob/main/Tasmota_Templates/IoTsmart_ESP32-S3.md#iotextra-analog3) | 🔶 | 🔶 | [![Template](https://img.shields.io/badge/Template-green)](https://github.com/makethingshappy/IoThome/blob/main/Tasmota_Templates/IoTbase_Nano.md#iotextra-analog3) | [![Template](https://img.shields.io/badge/Template-green)](https://github.com/makethingshappy/IoThome/blob/main/Tasmota_Templates/IoTbase_Feather.md#iotextra-analog3) |
@@ -249,7 +250,8 @@ Berry drivers are `.be` files that run directly on the ESP32 inside Tasmota. Upl
 |---|---|
 | IoTextra Analog Input (ADS1115) | `ADS1115Data.be` |
 | IoTextra Analog 3 (ADS7828) | `ADS7828.be` |
-| IoTextra Relay / Digital I/O (TCA9534 or TCA9534A) | `TCA9534.be` |
+| IoTextra Relay2 / Digital I/O (TCA9534 or TCA9534A) | `TCA9534.be` |
+| IoTextra Relay (4 SPST + 4 latching) | `Relay.be` |
 | IoTextra Quadro — ISO1211 **sampled-mode** channels (90 V DC / 110 V AC / 220 V AC) | `ISO1211.be` |
 
 **3.** Click **Upload** for each file. You will see it appear in the file list once uploaded successfully.
@@ -356,6 +358,22 @@ var HARDWARE_MODE        = "i2c"       # "i2c" or "gpio"
 | Pin config string | Check the schematic for your IoTextra module — common presets are listed in the driver documentation |
 | Hardware mode | Use `"i2c"` unless your channels are directly wired to ESP32 GPIO pins |
 
+### Relay (`Relay.be`)
+
+> ⚠️ Use this driver for **IoTextra Relay** only (4 SPST + 4 latching). Do **not** load `TCA9534.be` against this board — the expander pins are H-bridge IN1/IN2 pairs, not static relay outputs.
+
+```berry
+var IOEXPANDER_ADDRESS = 0x3F   # TCA9534A default: SB1/SB2/SB3 open (A2=A1=A0=1)
+var NSLEEP_GPIO        = 5      # HOST AP5 on IoTsmart ESP32-S3;
+var PULSE_MS           = 5      # latching coil pulse width (keep <= 10)
+```
+
+| What to check | Where to find the answer |
+|---|---|
+| I²C address | TCA9534A with all address straps high is `0x3F`. Close SB1/SB2/SB3 or stuff TCA9534 (non-A) and match the address table in [`/Documentation/Berry Drivers.md`](./Berry%20Drivers.md) |
+| `NSLEEP_GPIO` | Must be the carrier GPIO for HOST **AP5**, and that pin must be **User/None** in the template so Berry owns it |
+| Template | [`IoTsmart ESP32-S3 — IoTextra Relay`](../Tasmota_Templates/IoTsmart_ESP32-S3.md#iotextra-relay): AP0–AP3 = Relay1–4 (SPST), AP5 left unassigned |
+
 ### ISO1211 (`ISO1211.be`)
 
 > ⚠️ This driver is **only** for IoTextra Quadro channels in **sampled mode** (JM jumper **open**: 90 V DC, 110 V AC, 220 V AC). Direct-mode channels (12–60 V DC, JM closed) are ordinary DI inputs — use `TCA9534.be` for those.
@@ -404,6 +422,7 @@ Tasmota runs `autoexec.be` automatically on every boot. You need to create this 
 load('ADS1115Data.be')
 load('ADS7828.be')
 load('TCA9534.be')
+load('Relay.be')     # IoTextra Relay only — do not load with TCA9534.be
 load('ISO1211.be')   # IoTextra Quadro, sampled-mode ISO1211 channels only
 ```
 
