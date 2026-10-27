@@ -2,7 +2,6 @@
 # Source: IoTsmart/ESP32-S3/v.2.01/host-map.yaml + IoTextra-Digital/Octal/v.3.04/host-map.yaml
 # All channels active-low on the HOST line: input active = 0, output on = 0
 # Requires SB2 closed (HOST AP4 -> RL1). With SB1 closed AP4 is TCA9534 INT: RL1 will not work.
-# Status: not yet verified on hardware
 esphome:
   name: octal-s3
 
