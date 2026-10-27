@@ -33,7 +33,7 @@ Tasmota templates for IoTextra mezzanine modules used with the **IoTsmart ESP32-
 ```
 ### IoTextra SSR Small
 ```json
-{"NAME":"IoTextra SSR Small","GPIO":[1,1,1,1,256,257,258,259,260,261,262,263,1,1,1,608,640,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"FLAG":0,"BASE":1}
+{"NAME":"IoTextra SSR Small","GPIO":[1,1,1,1,260,261,262,263,256,257,258,259,1,1,1,608,640,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"FLAG":0,"BASE":1}
 ```
 ### IoTextra MOSFET2
 ```json
