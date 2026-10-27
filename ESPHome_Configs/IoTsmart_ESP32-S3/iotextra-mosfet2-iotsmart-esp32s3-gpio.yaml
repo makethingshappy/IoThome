@@ -1,7 +1,6 @@
 # IoTextra MOSFET2 3.02 + IoTsmart ESP32-S3 2.01 — GPIO mode (HOST AP0..AP7)
 # Source: IoTsmart/ESP32-S3/v.2.01/host-map.yaml + IoTextra-Digital/MOSFET2/v.3.02/host-map.yaml
 # Outputs DO1..DO8: MOSFET, active-low on the HOST line (output on = 0)
-# Status: not yet verified on hardware
 esphome:
   name: mosfet2-s3
 
