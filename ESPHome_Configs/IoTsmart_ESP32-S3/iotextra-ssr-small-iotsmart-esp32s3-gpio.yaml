@@ -1,7 +1,6 @@
 # IoTextra SSR Small 3.02 + IoTsmart ESP32-S3 2.01 — GPIO mode (HOST AP0..AP7)
 # Source: IoTsmart/ESP32-S3/v.2.01/host-map.yaml + IoTextra-Digital/SSR Small/v.3.02/host-map.yaml
 # Outputs RL1..RL8: SSR, active-low on the HOST line (output on = 0)
-# Status: not yet verified on hardware
 esphome:
   name: ssr-small-s3
 
