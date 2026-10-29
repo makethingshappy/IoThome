@@ -1,0 +1,106 @@
+# IoTextra Analog 3.12 + IoTsmart ESP32-S3 2.01 — I2C mode (2x ADS1115 on HOST SDA/SCL)
+# Source: IoTsmart/ESP32-S3/v.2.01/host-map.yaml + IoTextra-Analog/Analog/v.3.12/host-map.yaml
+# Each channel is differential: op-amp output vs 2.5 V reference.
+#   Vin [V]  = Vdiff * 105k / R           (R = 24.95k default -> factor 4.2084)
+#   Iin [mA] = Vin / 248.7 ohm * 1000      (R = 24.95k default -> factor 16.922)
+# Per-channel settings (substitutions below), R = 24.95k:
+#   range              gain    factor   unit
+#   0-10V / ±10V       4.096   4.2084   V
+#   0-5V  / ±5V        2.048   4.2084   V
+#   0-0.5V / ±0.5V     0.256   4.2084   V
+#   0-20/4-20/±20 mA   2.048   16.922   mA
+#   0-40 mA            4.096   16.922   mA
+# Status: not yet verified on hardware
+substitutions:
+  ai1_gain: "4.096"
+  ai1_factor: "4.2084"
+  ai1_unit: "V"
+  ai2_gain: "4.096"
+  ai2_factor: "4.2084"
+  ai2_unit: "V"
+  ai3_gain: "4.096"
+  ai3_factor: "4.2084"
+  ai3_unit: "V"
+  ai4_gain: "4.096"
+  ai4_factor: "4.2084"
+  ai4_unit: "V"
+
+esphome:
+  name: analog-iotsmart-s3
+
+esp32:
+  variant: esp32s3
+  flash_size: 4MB
+  framework:
+    type: esp-idf
+
+# Waveshare ESP32-S3-Tiny on IoTsmart ESP32-S3: 4MB flash, 2MB PSRAM
+psram:
+  mode: quad
+
+logger:
+api:
+ota:
+  - platform: esphome
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  ap: {}
+captive_portal:
+web_server:
+  port: 80
+
+# HOST I2C: IoTsmart ESP32-S3 2.01 SDA=GPIO16, SCL=GPIO15 (onboard EEPROM 0x54-0x57 on the same bus)
+i2c:
+  id: host_i2c
+  sda: GPIO16
+  scl: GPIO15
+  scan: true
+
+ads1115:
+  - id: ads_u2          # AI1, AI2
+    address: 0x49       # SB2 open (default); 0x48 if SB2 closed
+  - id: ads_u4          # AI3, AI4
+    address: 0x4B       # SB3 closed, SB4 open (default); 0x4A if SB3 open, SB4 closed
+
+sensor:
+  - platform: ads1115
+    ads1115_id: ads_u2
+    name: "AI1"
+    multiplexer: A0_A1
+    gain: ${ai1_gain}
+    unit_of_measurement: ${ai1_unit}
+    accuracy_decimals: 3
+    update_interval: 2s
+    filters:
+      - multiply: ${ai1_factor}
+  - platform: ads1115
+    ads1115_id: ads_u2
+    name: "AI2"
+    multiplexer: A2_A3
+    gain: ${ai2_gain}
+    unit_of_measurement: ${ai2_unit}
+    accuracy_decimals: 3
+    update_interval: 2s
+    filters:
+      - multiply: ${ai2_factor}
+  - platform: ads1115
+    ads1115_id: ads_u4
+    name: "AI3"
+    multiplexer: A0_A1
+    gain: ${ai3_gain}
+    unit_of_measurement: ${ai3_unit}
+    accuracy_decimals: 3
+    update_interval: 2s
+    filters:
+      - multiply: ${ai3_factor}
+  - platform: ads1115
+    ads1115_id: ads_u4
+    name: "AI4"
+    multiplexer: A2_A3
+    gain: ${ai4_gain}
+    unit_of_measurement: ${ai4_unit}
+    accuracy_decimals: 3
+    update_interval: 2s
+    filters:
+      - multiply: ${ai4_factor}
