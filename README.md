@@ -2,6 +2,10 @@
 
 A standalone ecosystem integrating IoTextra, IoTbase and IoTsmart series modules with Tasmota. It enables automation logic for smart home IoT applications, such as smart farming, without requiring external controllers or servers.
 
+In the compatibility tables this software is listed as **MTH for Tasmota (formerly IoThome)**.
+
+> **Looking for ESPHome?** ESPHome support for IoTextra modules lives in a separate repository: [**MTH for ESPHome**](https://github.com/makethingshappy/MTH-for-ESPHome). It has the compatibility matrix, ready-to-flash configurations and the setup guide. This repository covers the Tasmota path only; the older ESPHome copies in [`ESPHome_Configs`](ESPHome_Configs/) are kept as an archive and are no longer updated.
+
 ---
 
 ## ⚡ Key Principle
