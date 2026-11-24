@@ -1,5 +1,5 @@
 # Tasmota Templates — IoTsmart XIAO + XIAO ESP32-S3
-Tasmota templates for IoTextra mezzanine modules used with the **IoTsmart XIAO** carrier (v.1.02) and the **Seeed XIAO ESP32-S3**.
+Tasmota templates for IoTextra mezzanine modules used with the **IoTsmart XIAO** carrier (v.1.02 and v.2.01 — same HOST pinout) and the **Seeed XIAO ESP32-S3**.
 ## Available Templates
 | IoTextra Module  | Status          |
 |------------------|-----------------|
