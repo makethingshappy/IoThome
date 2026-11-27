@@ -1,0 +1,30 @@
+name: Check NSLEEP_GPIO
+
+# Fails when the NSLEEP_GPIO values of the latching drivers (Octal3, Relay) in the docs / drivers
+# differ from host.AP5 in the host-map.yaml files of IoTsmart and IoTbase, or when a new ESP32 platform
+# appears in a host-map.yaml that Documentation/nsleep_gpio.yaml does not know.
+
+on:
+  push:
+    paths:
+      - 'Documentation/nsleep_gpio.yaml'
+      - 'Documentation/Setup.md'
+      - 'Documentation/Berry Drivers.md'
+      - 'Berry_Drivers/Relay.be'
+      - 'Berry_Drivers/Octal3.be'
+      - 'scripts/check_nsleep_gpio.py'
+  pull_request:
+  schedule:
+    - cron: '17 5 20 * *'    # monthly, on the 20th: catches new platforms added in IoTsmart / IoTbase
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: pip install pyyaml
+      - name: Check
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python3 scripts/check_nsleep_gpio.py
