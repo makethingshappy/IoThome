@@ -8,6 +8,7 @@ Tasmota templates for IoTextra mezzanine modules used with the **IoTbase Nano** 
 | IoTextra Module  | Status          |
 |------------------|-----------------|
 | Input            | ✅ Available    |
+| Relay            | ✅ Available    |
 | Relay2           | ✅ Available    |
 | SSR Small        | ✅ Available    |
 | MOSFET2          | ✅ Available    |
@@ -26,6 +27,11 @@ Tasmota templates for IoTextra mezzanine modules used with the **IoTbase Nano** 
 ### IoTextra Input
 ```json
 {"NAME":"IoTextra Input","GPIO":[1,1,166,165,164,167,1,1,1,160,161,640,608,1,1,1,1,162,163,1,1,1,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1],"FLAG":0,"BASE":1}
+```
+
+### IoTextra Relay
+```json
+{"NAME":"IoTextra Relay","GPIO":[1,1,1,1,1,1,1,1,1,256,257,640,608,1,1,1,1,258,259,1,1,1,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1],"FLAG":0,"BASE":1}
 ```
 
 ### IoTextra Relay2
@@ -55,7 +61,7 @@ Tasmota templates for IoTextra mezzanine modules used with the **IoTbase Nano** 
 
 ### IoTextra Octal3
 ```json
-{"NAME":"IoTextra Octal3","GPIO":[1,1,1,256,1,1,1,1,1,160,161,640,608,1,1,1,1,162,163,1,1,1,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1],"FLAG":0,"BASE":1}
+{"NAME":"IoTextra Octal3","GPIO":[1,1,1,1,1,1,1,1,1,160,161,640,608,1,1,1,1,162,163,1,1,1,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1],"FLAG":0,"BASE":1}
 ```
 
 ### IoTextra Octal4

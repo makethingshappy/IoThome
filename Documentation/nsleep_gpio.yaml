@@ -1,0 +1,37 @@
+# Source data for the NSLEEP_GPIO checker (scripts/check_nsleep_gpio.py).
+#
+# NSLEEP_GPIO of the latching modules (Octal3, Relay) = the GPIO that a platform connects to HOST AP5.
+# The truth is the `host.AP5` entry in the host-map.yaml of the platform (IoTsmart / IoTbase repos).
+# The checker compares this file with host-map.yaml, with the tables in Setup.md and Berry Drivers.md,
+# and with the comments in Relay.be / Octal3.be. It also fails when a host-map.yaml contains an ESP32 board
+# that is neither listed under `platforms` nor under `ignore`  ->  a new platform must be added here.
+#
+# `label` is the text of the first column of the table in the docs and the name used in the driver comments.
+
+platforms:
+  - label: IoTsmart ESP32-S3
+    gpio: 5
+    sources:
+      - {repo: IoTsmart, path: ESP32-S3/v.2.01/host-map.yaml}
+      - {repo: IoTsmart, path: ESP32-S3/v.1.02/host-map.yaml}
+  - label: IoTsmart XIAO + XIAO ESP32-S3
+    gpio: 2
+    sources:
+      - {repo: IoTsmart, path: XIAO/v.2.01/host-map.yaml, board: xiao-esp32s3}
+      - {repo: IoTsmart, path: XIAO/v.1.02/host-map.yaml, board: xiao-esp32s3}
+  - label: IoTbase NANO + Waveshare ESP32-S3-NANO / Arduino Nano ESP32
+    gpio: 3
+    sources:
+      - {repo: IoTbase, path: NANO/v.3.06/host-map.yaml, board: esp32-s3-nano}
+      - {repo: IoTbase, path: NANO/v.3.06/host-map.yaml, board: nano-esp32}
+  - label: IoTbase PICO + Waveshare ESP32-S3-Pico
+    gpio: 40
+    sources:
+      - {repo: IoTbase, path: PICO/v.3.06/host-map.yaml, board: esp32-s3-pico}
+
+# ESP32 boards that are intentionally not covered (no Tasmota GPIO mapping for NSLEEP). Give a reason.
+ignore:
+  - {repo: IoTsmart, path: XIAO/v.2.01/host-map.yaml, board: xiao-esp32c6, reason: "no Tasmota template for XIAO ESP32-C6"}
+  - {repo: IoTsmart, path: XIAO/v.1.02/host-map.yaml, board: xiao-esp32c6, reason: "no Tasmota template for XIAO ESP32-C6"}
+  - {repo: IoTbase, path: PICO/v.3.06/host-map.yaml, board: esp32-c6-pico, reason: "AP5 is on the TCA9554 expander, not on a GPIO"}
+  - {repo: IoTbase, path: PICO/v.3.05/host-map.yaml, board: esp32-c6-pico, reason: "AP5 is on the TCA9554 expander, not on a GPIO"}

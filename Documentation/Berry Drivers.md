@@ -416,8 +416,21 @@ var PULSE_MS           = 5
 | Variable | What it controls | Valid values |
 |---|---|---|
 | `IOEXPANDER_ADDRESS` | TCA9534/TCA9534A address | `0x20`–`0x27` or `0x38`–`0x3F`. Default `0x3F` = TCA9534A with SB1/SB2/SB3 open |
-| `NSLEEP_GPIO` | Physical ESP GPIO for HOST AP5, or `nil` to skip | IoTsmart ESP32-S3: **5** |
+| `NSLEEP_GPIO` | Physical ESP GPIO for HOST AP5, or `nil` to skip | Default `5` is correct **only** for IoTsmart ESP32-S3. Other platforms: see the table below |
 | `PULSE_MS` | Latching coil pulse width | Keep `<= 10` |
+
+**`NSLEEP_GPIO` by platform** (the same values apply to `Octal3.be`):
+
+| Platform (carrier + board) | HOST AP5 = `NSLEEP_GPIO` |
+|---|:---:|
+| IoTsmart ESP32-S3 | **5** |
+| IoTsmart XIAO + XIAO ESP32-S3 | **2** (D1) |
+| IoTbase NANO + Waveshare ESP32-S3-NANO / Arduino Nano ESP32 | **3** (ESP32-S3 strapping pin) |
+| IoTbase PICO + Waveshare ESP32-S3-Pico | **40** |
+
+Source: the `host-map.yaml` files of [IoTsmart](https://github.com/makethingshappy/IoTsmart) and [IoTbase](https://github.com/makethingshappy/IoTbase) (`AP5` entry of your board). If your platform is not listed, take the value from its `host-map.yaml`.
+
+If `NSLEEP_GPIO` does not match your platform, the DRV8837C drivers stay in sleep and the latching relays do not switch. Keep the pin **User/None** in the Tasmota template.
 
 Disable the conflicting built-in I²C driver: `I2cDriver36 0`.
 

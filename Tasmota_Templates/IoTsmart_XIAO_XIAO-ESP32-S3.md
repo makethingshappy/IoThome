@@ -4,13 +4,13 @@ Tasmota templates for IoTextra mezzanine modules used with the **IoTsmart XIAO**
 | IoTextra Module  | Status          |
 |------------------|-----------------|
 | Input            | ✅ Available    |
-| Relay            | 🔶 Coming Soon |
+| Relay            | ✅ Available    |
 | Relay2           | ✅ Available    |
 | SSR Small        | ✅ Available    |
 | MOSFET2          | ✅ Available    |
 | Octal            | ✅ Available    |
 | Octal2           | ✅ Available    |
-| Octal3           | 🔲 Planned      |
+| Octal3           | ✅ Available    |
 | Octal4           | ✅ Available    |
 | Quadro           | 🔲 Planned      |
 | Analog           | ✅ Available    |
@@ -22,6 +22,10 @@ Tasmota templates for IoTextra mezzanine modules used with the **IoTsmart XIAO**
 ### IoTextra Input
 ```json
 {"NAME":"IoTextra Input","GPIO":[1,164,165,166,167,640,608,162,160,161,1,1,1,1,1,1,1,1,1,0,0,1,1,1,0,0,0,1,1,1,1,1,1,163,1,1,1,1],"FLAG":0,"BASE":1}
+```
+### IoTextra Relay
+```json
+{"NAME":"IoTextra Relay","GPIO":[1,1,1,1,1,640,608,258,256,257,1,1,1,1,1,1,1,1,1,0,0,1,1,1,0,0,0,1,1,1,1,1,1,259,1,1,1,1],"FLAG":0,"BASE":1}
 ```
 ### IoTextra Relay2
 ```json
@@ -42,6 +46,10 @@ Tasmota templates for IoTextra mezzanine modules used with the **IoTsmart XIAO**
 ### IoTextra Octal2
 ```json
 {"NAME":"IoTextra Octal2","GPIO":[1,256,257,258,259,640,608,162,160,161,1,1,1,1,1,1,1,1,1,0,0,1,1,1,0,0,0,1,1,1,1,1,1,163,1,1,1,1],"FLAG":0,"BASE":1}
+```
+### IoTextra Octal3
+```json
+{"NAME":"IoTextra Octal3","GPIO":[1,1,1,1,1,640,608,162,160,161,1,1,1,1,1,1,1,1,1,0,0,1,1,1,0,0,0,1,1,1,1,1,1,163,1,1,1,1],"FLAG":0,"BASE":1}
 ```
 ### IoTextra Octal4
 ```json

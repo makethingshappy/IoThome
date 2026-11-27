@@ -72,8 +72,12 @@ var PIN_CONFIG = "11110000"
 var OCTAL3_CHANNELS = [1, 2, 3, 4]
 
 #- Physical GPIO for nSLEEP (HIGH=awake, LOW=sleep), or nil to skip.
- - Default GPIO5 matches IoTextra Octal3 HOST wiring.
- - Clear Relay1 (etc.) off this pin in the Tasmota template so Berry owns it. -#
+ - Set this to the GPIO that your carrier connects to HOST AP5:
+ -   IoTsmart ESP32-S3 = 5 (default)    IoTsmart XIAO + XIAO ESP32-S3 = 2
+ -   IoTbase NANO + Waveshare ESP32-S3-NANO / Arduino Nano ESP32 = 3
+ -   IoTbase PICO + Waveshare ESP32-S3-Pico = 40
+ - Other platforms: see AP5 in the host-map.yaml of your carrier.
+ - Keep this pin User/None in the Tasmota template so Berry owns it. -#
 var NSLEEP_GPIO = 5
 
 #- Latching coil pulse width (ms). Keep <= 10; Berry must not block long. -#

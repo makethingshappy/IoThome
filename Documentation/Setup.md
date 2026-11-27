@@ -358,21 +358,51 @@ var HARDWARE_MODE        = "i2c"       # "i2c" or "gpio"
 | Pin config string | Check the schematic for your IoTextra module — common presets are listed in the driver documentation |
 | Hardware mode | Use `"i2c"` unless your channels are directly wired to ESP32 GPIO pins |
 
+### Latching modules (Octal3, Relay): set `NSLEEP_GPIO` for your platform
+
+> ⚠️ **Edit this value if your platform is not IoTsmart ESP32-S3.** The latching relay drivers (`Octal3.be`, `Relay.be`) ship with `NSLEEP_GPIO = 5`, which is correct **only** for IoTsmart ESP32-S3. With the wrong value the DRV8837C drivers stay in sleep and the latching relays do not switch.
+
+The shared DRV8837C nSLEEP signal is on HOST pin **AP5**. Set `NSLEEP_GPIO` in the driver to the GPIO that your carrier connects to AP5:
+
+| Platform (carrier + board) | HOST AP5 = `NSLEEP_GPIO` |
+|---|:---:|
+| IoTsmart ESP32-S3 | **5** |
+| IoTsmart XIAO + XIAO ESP32-S3 | **2** (D1) |
+| IoTbase NANO + Waveshare ESP32-S3-NANO / Arduino Nano ESP32 | **3** (ESP32-S3 strapping pin) |
+| IoTbase PICO + Waveshare ESP32-S3-Pico | **40** |
+
+Source: the `host-map.yaml` files of [IoTsmart](https://github.com/makethingshappy/IoTsmart) and [IoTbase](https://github.com/makethingshappy/IoTbase) (`AP5` entry of your board). If your platform is not listed, take the value from its `host-map.yaml`.
+
+In the Tasmota template the pin must stay **User/None** (not Relay, not Switch), so Berry can drive it.
+
 ### Relay (`Relay.be`)
 
 > ⚠️ Use this driver for **IoTextra Relay** only (4 SPST + 4 latching). Do **not** load `TCA9534.be` against this board — the expander pins are H-bridge IN1/IN2 pairs, not static relay outputs.
 
 ```berry
 var IOEXPANDER_ADDRESS = 0x3F   # TCA9534A default: SB1/SB2/SB3 open (A2=A1=A0=1)
-var NSLEEP_GPIO        = 5      # HOST AP5 on IoTsmart ESP32-S3;
+var NSLEEP_GPIO        = 5      # HOST AP5 GPIO: 5 = IoTsmart ESP32-S3; change for other platforms (table above)
 var PULSE_MS           = 5      # latching coil pulse width (keep <= 10)
 ```
 
 | What to check | Where to find the answer |
 |---|---|
 | I²C address | TCA9534A with all address straps high is `0x3F`. Close SB1/SB2/SB3 or stuff TCA9534 (non-A) and match the address table in [`/Documentation/Berry Drivers.md`](./Berry%20Drivers.md) |
-| `NSLEEP_GPIO` | Must be the carrier GPIO for HOST **AP5**, and that pin must be **User/None** in the template so Berry owns it |
-| Template | [`IoTsmart ESP32-S3 — IoTextra Relay`](../Tasmota_Templates/IoTsmart_ESP32-S3.md#iotextra-relay): AP0–AP3 = Relay1–4 (SPST), AP5 left unassigned |
+| `NSLEEP_GPIO` | Must be the carrier GPIO for HOST **AP5** — see the platform table above — and that pin must be **User/None** in the template so Berry owns it |
+| Template | Template for your platform (see the coverage table above): AP0–AP3 = Relay1–4 (SPST), AP5 left unassigned, e.g. [`IoTsmart ESP32-S3 — IoTextra Relay`](../Tasmota_Templates/IoTsmart_ESP32-S3.md#iotextra-relay) |
+
+### Octal3 (`Octal3.be`)
+
+> ⚠️ Use this driver for **IoTextra Octal3** (4 latching relays via I²C + 4 inputs on HOST GPIO). Do **not** load `TCA9534.be` against the relay expander.
+
+```berry
+var NSLEEP_GPIO = 5   # HOST AP5 GPIO: 5 = IoTsmart ESP32-S3; change for other platforms (table above)
+```
+
+| What to check | Where to find the answer |
+|---|---|
+| `NSLEEP_GPIO` | Set it for your platform — see **Latching modules** above. The pin must be **User/None** in the template (do not assign it as Relay1) |
+| Template | Template for your platform: Switch1–4 = inputs on AP0–AP3, I²C SDA/SCL, AP5 left unassigned |
 
 ### ISO1211 (`ISO1211.be`)
 
